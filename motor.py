@@ -13,7 +13,6 @@ class Motor():
             self.frequency /= 2
 
         _, self.motorValues = self._create_wave(ITER_STEPS, self.frequency, self.amplitude, self.phaseshift)
-        print('motor done')
 
     def _create_wave(self, N, freq=1, amp=1, shift=0):
         t = np.linspace(0,N,N)
@@ -21,11 +20,11 @@ class Motor():
         signal = amp*np.sin(w*t + shift)
         return t, signal
 
-    def SetValue(self, robot, t):
+    def SetValue(self, robot, desiredAngle):
         pyrosim.Set_Motor_For_Joint(
             bodyIndex=robot.id, 
             jointName=self.jointName,   #.encode(),  # cuz needed byte string for some reason
             controlMode=p.POSITION_CONTROL, 
-            targetPosition=self.motorValues[t], 
+            targetPosition=desiredAngle, 
             maxForce=LEG_FORCE
             )

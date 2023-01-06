@@ -44,6 +44,15 @@ class NEURON:
 
         return self.type == c.SENSOR_NEURON
 
+    # adding from I37
+    def Update_Sensor_Neuron(self):
+        self.Set_Value(pyrosim.Get_Touch_Sensor_Value_For_Link(self.linkName))
+
+    # add from I51
+    def Update_Hidden_Or_Motor_Neuron(self):
+        # self.Set_Value(0)
+        self.Set_Value(math.pi/4)
+
     def Is_Hidden_Neuron(self):
 
         return self.type == c.HIDDEN_NEURON
