@@ -6,8 +6,6 @@
 
 # import matplotlib.pyplot as plt
 
-# import constants as c
-
 
 # ITER_STEPS = 1000
 # LEG_FORCE = 30
@@ -47,14 +45,14 @@
 
 # for i in range(ITER_STEPS):
 #     p.stepSimulation()
-#     backLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("BackLeg")
-#     frontLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("FrontLeg")
+#     # backLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("BackLeg")
+#     # frontLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("FrontLeg")
 #     # inching forward
 #     # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"BackLeg_Torso", controlMode=p.POSITION_CONTROL, targetPosition=random.uniform(-np.pi/2, np.pi/2), maxForce=LEG_FORCE)
 #     # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"Torso_FrontLeg", controlMode=p.POSITION_CONTROL, targetPosition=random.uniform(-np.pi/2, np.pi/2), maxForce=LEG_FORCE)
 #     # sway back and forth
-#     pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"BackLeg_Torso", controlMode=p.POSITION_CONTROL, targetPosition=frontLegPowerWave[i], maxForce=LEG_FORCE)
-#     pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"Torso_FrontLeg", controlMode=p.POSITION_CONTROL, targetPosition=-backLegPowerWave[i], maxForce=LEG_FORCE)
+#     # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"BackLeg_Torso", controlMode=p.POSITION_CONTROL, targetPosition=frontLegPowerWave[i], maxForce=LEG_FORCE)
+#     # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"Torso_FrontLeg", controlMode=p.POSITION_CONTROL, targetPosition=-backLegPowerWave[i], maxForce=LEG_FORCE)
 #     time.sleep(1/100)
 #     print(i)
 # p.disconnect()
@@ -63,4 +61,5 @@
 # np.save('data/f/frontLegSensorValues.npy', frontLegSensorValues)
 
 from simulation import Simulation
-simulation = Simulation()
+sim = Simulation()
+sim.run()

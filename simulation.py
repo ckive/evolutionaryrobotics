@@ -5,7 +5,8 @@ import pybullet as p
 import pybullet_data
 import pyrosim.pyrosim as pyrosim
 from constants import *
-import time
+import time, os
+import numpy as np
 
 class Simulation:
     def __init__(self) -> None:
@@ -16,24 +17,40 @@ class Simulation:
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         # set gravity
         p.setGravity(0,0,-9.8)
-        self.robot = Robot() 
         self.world = World()
+        self.robot = Robot() 
+        
         
 
-        # pyrosim needs setup b4 using sensors
-        pyrosim.Prepare_To_Simulate(self.robot.id)
+        
 
     def run(self):
-        for i in range(ITER_STEPS):
+        for t in range(ITER_STEPS):
             p.stepSimulation()
+            self.robot.Sense(t)
+            self.robot.Act(t)
             # backLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("BackLeg")
             # frontLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("FrontLeg")
+            
             # inching forward
             # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"BackLeg_Torso", controlMode=p.POSITION_CONTROL, targetPosition=random.uniform(-np.pi/2, np.pi/2), maxForce=LEG_FORCE)
             # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"Torso_FrontLeg", controlMode=p.POSITION_CONTROL, targetPosition=random.uniform(-np.pi/2, np.pi/2), maxForce=LEG_FORCE)
+            
             # sway back and forth
             # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"BackLeg_Torso", controlMode=p.POSITION_CONTROL, targetPosition=frontLegPowerWave[i], maxForce=LEG_FORCE)
             # pyrosim.Set_Motor_For_Joint(bodyIndex=robotId, jointName=b"Torso_FrontLeg", controlMode=p.POSITION_CONTROL, targetPosition=-backLegPowerWave[i], maxForce=LEG_FORCE)
-            time.sleep(1/100)
-            print(i)
+            time.sleep(1/1000)
+            print(t)
+        print([ssr.value for ssr in self.robot.sensors.values()])
+
+    def Save_Values(self):
+        path = "data/h"
+        os.makedirs(path, exist_ok=True)
+        for sensor_name, sensor in self.robot.sensors.items():
+            np.save(f"{path}/{sensor_name}.npy", sensor.values)
+        for motor_name, motor in self.robot.motors.items():
+            np.save(f"{path}/{sensor_name}.npy", motor.motorValues)
+
+
+    def __del__(self):
         p.disconnect()
