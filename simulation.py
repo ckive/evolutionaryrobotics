@@ -16,12 +16,12 @@ class Simulation:
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         # set gravity
         p.setGravity(0,0,-9.8)
-
+        self.robot = Robot() 
         self.world = World()
-        # self.robot = Robot()
+        
 
         # pyrosim needs setup b4 using sensors
-        # pyrosim.Prepare_To_Simulate(self.robot.id)
+        pyrosim.Prepare_To_Simulate(self.robot.id)
 
     def run(self):
         for i in range(ITER_STEPS):
