@@ -49,7 +49,7 @@ class NEURON:
         self.Set_Value(pyrosim.Get_Touch_Sensor_Value_For_Link(self.linkName))
 
     # add from I51
-    def Update_Hidden_Or_Motor_Neuron(self):
+    def Update_Hidden_Or_Motor_Neuron(self, neurons, synapses):
         # self.Set_Value(0)
         self.Set_Value(math.pi/4)
 
