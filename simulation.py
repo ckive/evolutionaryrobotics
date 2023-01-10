@@ -20,18 +20,14 @@ class Simulation:
         self.world = World()
         self.robot = Robot() 
         
-        
-
-        
-
     def run(self):
         for t in range(ITER_STEPS):
             p.stepSimulation()
             self.robot.Sense(t)
             self.robot.Think()
             self.robot.Act(t)
-            time.sleep(1/200)
-            print(t)
+            time.sleep(1/2000)
+            # print(t)
         # print([ssr.value for ssr in self.robot.sensors.values()])
         
 

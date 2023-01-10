@@ -59,7 +59,7 @@ class NEURON:
                 # print(presynap, postsynap)
         # J39 expecting value=2
         self.Threshold()
-        
+        # print('smt')
 
     # add from J27
     def Allow_Presynaptic_Neuron_To_Influence_Me(self, weight, value):
