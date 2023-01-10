@@ -50,8 +50,22 @@ class NEURON:
 
     # add from I51
     def Update_Hidden_Or_Motor_Neuron(self, neurons, synapses):
-        # self.Set_Value(0)
-        self.Set_Value(math.pi/4)
+        self.Set_Value(0)
+        # this neuron's name
+        # print(self.Get_Name())
+        for presynap, postsynap in synapses:
+            if self.Get_Name() == postsynap:
+                self.Allow_Presynaptic_Neuron_To_Influence_Me(synapses[(presynap,postsynap)].Get_Weight(), neurons[presynap].Get_Value())
+                # print(presynap, postsynap)
+        # J39 expecting value=2
+        self.Threshold()
+        
+
+    # add from J27
+    def Allow_Presynaptic_Neuron_To_Influence_Me(self, weight, value):
+        self.Add_To_Value(weight*value)
+        # print(weight, value)    # this is 1,-1
+
 
     def Is_Hidden_Neuron(self):
 

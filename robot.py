@@ -42,7 +42,7 @@ class Robot():
                 # print(neuronName)
                 print('Act Priting', neuronName, jointName, desiredAngle)
 
-        self.nn.Print()
+        # self.nn.Print()
         # for motor in self.motors.values():
         #     motor.SetValue(self, t)
     
