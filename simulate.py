@@ -4,7 +4,7 @@ import pyrosim.pyrosim as pyrosim
 import time
 import numpy as np
 
-ITER_STEPS = 100
+ITER_STEPS = 1000
 
 physicsClient = p.connect(p.GUI)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
@@ -26,9 +26,11 @@ frontLegSensorValues = np.zeros(ITER_STEPS)
 for i in range(ITER_STEPS):
     p.stepSimulation()
     backLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("Link0")
+    # print(backLegSensorValues[i])
     frontLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("Link2")
-    time.sleep(1/100)
-    print(i)
+    # print(frontLegSensorValues[i])
+    time.sleep(1/10)
+    # print(i)
 p.disconnect()
 
 np.save('data/f/backLegSensorValues.npy', backLegSensorValues)
