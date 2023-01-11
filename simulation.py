@@ -27,8 +27,8 @@ class Simulation:
             self.robot.Think()
             self.robot.Act(t)
             time.sleep(1/2000)
-            # print(t)
-        # print([ssr.value for ssr in self.robot.sensors.values()])
+            print(t)
+        print([ssr.value for ssr in self.robot.sensors.values()])
         
 
     def Save_Values(self):

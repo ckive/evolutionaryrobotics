@@ -3,6 +3,7 @@
 # import pyrosim.pyrosim as pyrosim
 # import time, random
 # import numpy as np
+import time
 
 
 from simulation import Simulation

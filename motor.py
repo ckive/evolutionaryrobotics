@@ -9,8 +9,8 @@ class Motor():
         self.jointName = jointName
         self.amplitude, self.frequency, self.phaseshift = 1,10,0
 
-        if self.jointName == b'BackLeg_Torso':
-            self.frequency /= 2
+        # if self.jointName == b'Torso_BackLeg':
+        #     self.frequency /= 2
 
         _, self.motorValues = self._create_wave(ITER_STEPS, self.frequency, self.amplitude, self.phaseshift)
 
