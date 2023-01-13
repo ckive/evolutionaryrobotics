@@ -57,7 +57,8 @@ class Simulation:
         self.ITER_STEPS = ITER_STEPS
 
         # connect to engine
-        physicsClient = p.connect(p.GUI)
+        physicsClient = p.connect(p.GUI)    # we can see
+        # physicsClient = p.connect(p.Direct)   # we don't see
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         # set gravity
         p.setGravity(0,0,-9.8)
@@ -70,8 +71,8 @@ class Simulation:
             self.robot.Sense(t)
             self.robot.Think()
             self.robot.Act(t)
-            time.sleep(1/5000)
-            print(t)
+            # time.sleep(1/5000)
+            # print(t)
         # print([ssr.value for ssr in self.robot.sensors.values()])
         
 
@@ -82,6 +83,9 @@ class Simulation:
             np.save(f"{path}/{sensor_name}.npy", sensor.values)
         for motor_name, motor in self.robot.motors.items():
             np.save(f"{path}/{sensor_name}.npy", motor.motorValues)
+
+    def Get_Fitness(self):
+        self.robot.Get_Fitness()
 
 
     def __del__(self):

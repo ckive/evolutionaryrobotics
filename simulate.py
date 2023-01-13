@@ -9,3 +9,4 @@ import time
 from simulation import Simulation
 sim = Simulation()
 sim.run()
+sim.Get_Fitness()
