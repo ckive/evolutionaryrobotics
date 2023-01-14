@@ -39,13 +39,20 @@ class Robot():
                 desiredAngle = self.nn.Get_Value_Of(neuronName)
                 # neuronName is int, motors.key is b"torso_etc"
                 self.motors[jointName.encode()].SetValue(self, desiredAngle)
-                # print(neuronName)
-                # print('Act Priting', neuronName, jointName, desiredAngle)
 
-        self.nn.Print()
+        # self.nn.Print()
         # for motor in self.motors.values():
         #     motor.SetValue(self, t)
+
+    def Get_Fitness(self):
+        stateOfLinkZero = p.getLinkState(self.id,0)
+        positionOfLinkZero = stateOfLinkZero[0]
+        xCoordinateOfLinkZero = positionOfLinkZero[0]
+
+        with open('fitness.txt', 'w+') as f:
+            f.write(str(xCoordinateOfLinkZero))
+        
     
     def Think(self):
         self.nn.Update()
-        self.nn.Print()
+        # self.nn.Print()

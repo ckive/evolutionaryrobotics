@@ -3,9 +3,12 @@
 # import pyrosim.pyrosim as pyrosim
 # import time, random
 # import numpy as np
-import time
-
-
+import time, sys
 from simulation import Simulation
-sim = Simulation()
+
+# cli 
+directOrGUI = sys.argv[1]
+
+sim = Simulation(directOrGUI)
 sim.run()
+sim.Get_Fitness()
