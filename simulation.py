@@ -57,8 +57,8 @@ class Simulation:
         self.ITER_STEPS = ITER_STEPS
         # connect to engine
 
-        sim_mode = p.GUI if sim_mode == "GUI" else p.DIRECT
-        physicsClient = p.connect(sim_mode)
+        self.sim_mode = p.GUI if sim_mode == "GUI" else p.DIRECT
+        physicsClient = p.connect(self.sim_mode)
 
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
         # set gravity
@@ -72,7 +72,9 @@ class Simulation:
             self.robot.Sense(t)
             self.robot.Think()
             self.robot.Act(t)
-            time.sleep(1/2000)
+            if self.sim_mode == p.GUI:
+                # slow it down for viewing
+                time.sleep(1/2000)
             # print(t)
         # print([ssr.value for ssr in self.robot.sensors.values()])
         
