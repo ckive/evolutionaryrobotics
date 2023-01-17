@@ -9,7 +9,13 @@
             "type": "python",
             "request": "launch",
             // "program": "${file}",
-            "program": "simulate.py",
+            // "program": "simulate.py",
+            "program": "search.py",
+            // "args": [
+            //     // "GUI",
+            //     "DIRECT",
+            //     "1"
+            // ],
             "console": "integratedTerminal",
             "justMyCode": true
         }

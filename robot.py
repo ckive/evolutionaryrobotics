@@ -2,17 +2,24 @@ import pybullet as p
 import pyrosim.pyrosim as pyrosim
 from sensor import Sensor
 from motor import Motor
+import os
 
 from pyrosim.neuralNetwork import NEURAL_NETWORK
 
 class Robot():
-    def __init__(self) -> None:
-        
+    def __init__(self, parID) -> None:
+        # unique link identification
         self.id = p.loadURDF("body.urdf")
-        self.nn = NEURAL_NETWORK("brain.nndf")
+        # unique parallelization file identification
+        self.parID = parID
+
+        # ensure that brain{parID} exists prior to here (GenBrain called in Soln.Eval() which is called thru search -> PHC -> Soln)
+        self.nn = NEURAL_NETWORK(f"brain{parID}.nndf")
+        # delete after being read
+        os.system(f"rm brain{parID}.nndf")
 
         # pyrosim needs setup b4 using sensors
-        pyrosim.Prepare_To_Simulate(self.id)
+        pyrosim.Prepare_To_Simulate(self.id)    # this is link id (not parID)
         self.Prepare_To_Sense()
         self.Prepare_To_Act()
     
@@ -49,8 +56,13 @@ class Robot():
         positionOfLinkZero = stateOfLinkZero[0]
         xCoordinateOfLinkZero = positionOfLinkZero[0]
 
-        with open('fitness.txt', 'w+') as f:
+        # with open(f'fitness{str(self.parID)}.txt', 'w+') as f:
+        #     f.write(str(xCoordinateOfLinkZero))
+
+        with open(f'tmp{str(self.parID)}.txt', 'w+') as f:
             f.write(str(xCoordinateOfLinkZero))
+
+        os.system(f"mv tmp{str(self.parID)}.txt fitness{str(self.parID)}.txt")
         
     
     def Think(self):

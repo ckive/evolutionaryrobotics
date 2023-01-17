@@ -53,7 +53,7 @@ import time, os
 import numpy as np
 
 class Simulation:
-    def __init__(self, sim_mode) -> None:
+    def __init__(self, sim_mode, parID) -> None:
         self.ITER_STEPS = ITER_STEPS
         # connect to engine
 
@@ -64,7 +64,9 @@ class Simulation:
         # set gravity
         p.setGravity(0,0,-9.8)
         self.world = World()
-        self.robot = Robot() 
+
+        # before entering into robot, should first generate the robot brain{parID} file (located in solution)
+        self.robot = Robot(parID) 
 
     def run(self):
         for t in range(ITER_STEPS):

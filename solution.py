@@ -1,29 +1,67 @@
 import numpy as np
 import pyrosim.pyrosim as pyrosim
-import random, os
+import random, os, time
 import pybullet as p
 
 class Solution():
-    def __init__(self) -> None:
+    def __init__(self, parID, ptr2phc) -> None:
         self.weights = 2*np.random.rand(3,2)-1  #[-1,1]
+        # NOTE, robot.id is robotID, solution.parID is for parallelism concept ID
+        self.parID = parID
+        self.ptr2phc = ptr2phc
 
+    def Start_Simulation(self, sim_mode="DIRECT"):
+        self.Generate_Brain(self.parID)   # this changes since self.weights was altered
+        # spawn a new process
+        # silent
+        os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)} &")
+        # non silent
+        # os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)}")
 
-    def Evaluate(self, sim_mode="DIRECT"):
-        # should prob regen the brain here?
-        # self.CreateWorld()      # no change here really
-        # self.Generate_Body()    # no change here really
-        self.Generate_Brain()   # this changes since self.weights was altered
-        os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode}")
+    def Wait_For_Simulation_To_End(self):
+        while not os.path.exists(f"fitness{str(self.parID)}.txt"):
+            time.sleep(0.01)
+        print('fitness file found')
 
         # read in new fitness score
-        with open('fitness.txt', 'r') as f:
+        with open(f'fitness{self.parID}.txt', 'r') as f:
             self.fitness = f.read()
-            # print('soln fn:', self.fitness)
+            print('soln fn:', self.fitness)
+            # exit()
+        
+        # delete after reading
+        os.system(f'rm fitness{self.parID}.txt')
+
+
+    # def Evaluate(self, sim_mode="DIRECT"):
+    #     # should prob regen the brain here?
+    #     # self.CreateWorld()      # no change here really
+    #     # self.Generate_Body()    # no change here really
+    #     self.Generate_Brain(self.parID)   # this changes since self.weights was altered
+    #     # os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode}")
+    #     # spawn a new process
+    #     # silent
+    #     os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)} &")
+    #     # non silent
+    #     # os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)}")
+
+    #     while not os.path.exists(f"fitness{str(self.parID)}.txt"):
+    #         time.sleep(0.01)
+    #     print('fitness file found')
+
+    #     # read in new fitness score
+    #     with open(f'fitness{self.parID}.txt', 'r') as f:
+    #         self.fitness = f.read()
+    #         print('soln fn:', self.fitness)
+    #         # exit()
 
     def Mutate(self):
         mutRow, mutCol = random.randint(0,2), random.randint(0,1)
         self.weights[mutRow][mutCol] = random.random()*2-1
 
+    def Set_ID(self):
+        # updates PHC's self.nextID for every children we spawn
+        self.ptr2phc.nextparID += 1
 
 
     def CreateWorld(self):
@@ -43,8 +81,8 @@ class Solution():
         pyrosim.End()
 
 
-    def Generate_Brain(self):
-        pyrosim.Start_NeuralNetwork("brain.nndf")
+    def Generate_Brain(self, parID):
+        pyrosim.Start_NeuralNetwork(f"brain{parID}.nndf")
         pyrosim.Send_Sensor_Neuron(name = 0 , linkName = "Torso")
         pyrosim.Send_Sensor_Neuron(name = 1 , linkName = "BackLeg")
         pyrosim.Send_Sensor_Neuron(name = 2 , linkName = "FrontLeg")

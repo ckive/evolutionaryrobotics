@@ -1,10 +1,13 @@
 import os
-from hillclimber import Hillclimber
+# from hillclimber import Hillclimber
+from hillclimber_parallel import ParallelHillclimber
 
-# for _ in range(5):
-#     os.system("/Users/dan/miniforge3/bin/python generate.py")
-#     os.system("/Users/dan/miniforge3/bin/python simulate.py")
+# # normal hill climber
+# hc = Hillclimber()
+# hc.Evolve()
+# hc.Show_Best()
 
-hc = Hillclimber()
-hc.Evolve()
-hc.Show_Best()
+# parallel HC
+phc = ParallelHillclimber()
+phc.Evolve()
+phc.Show_Best()
