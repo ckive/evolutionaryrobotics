@@ -54,15 +54,19 @@ class Robot():
         #     motor.SetValue(self, t)
 
     def Get_Fitness(self):
-        stateOfLinkZero = p.getLinkState(self.id,0)
-        positionOfLinkZero = stateOfLinkZero[0]
-        xCoordinateOfLinkZero = positionOfLinkZero[0]
+        # stateOfLinkZero = p.getLinkState(self.id,0)
+        # positionOfLinkZero = stateOfLinkZero[0]
+        # xCoordinateOfLinkZero = positionOfLinkZero[0]
+
+        basePositionAndOrientation = p.getBasePositionAndOrientation(self.id)
+        basePosition = basePositionAndOrientation[0]
+        xPosition = basePosition[0]
 
         # with open(f'fitness{str(self.parID)}.txt', 'w+') as f:
         #     f.write(str(xCoordinateOfLinkZero))
 
         with open(f'tmp{str(self.parID)}.txt', 'w+') as f:
-            f.write(str(xCoordinateOfLinkZero))
+            f.write(str(xPosition))
 
         os.system(f"mv tmp{str(self.parID)}.txt fitness{str(self.parID)}.txt")
         
