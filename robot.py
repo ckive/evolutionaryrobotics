@@ -4,11 +4,13 @@ from sensor import Sensor
 from motor import Motor
 import os
 import constants as c
+import numpy as np
 
 from pyrosim.neuralNetwork import NEURAL_NETWORK
 
 class Robot():
-    def __init__(self, parID) -> None:
+    def __init__(self, parID, type='default') -> None:
+        self.type = type
         # unique link identification
         self.id = p.loadURDF("body.urdf")
         # unique parallelization file identification
@@ -28,7 +30,7 @@ class Robot():
         self.sensors = {}
         for linkName in pyrosim.linkNamesToIndices:
             self.sensors[linkName] = Sensor(linkName)
-        # print('my sensors',self.sensors)
+        print('my sensors',self.sensors)
 
     def Sense(self, t):
         for sensor in self.sensors.values():
@@ -53,20 +55,80 @@ class Robot():
         # for motor in self.motors.values():
         #     motor.SetValue(self, t)
 
+
+    def contigsubarrcount(self, onedarr, pct=0.01):
+        # expect array of booleans
+        N = len(onedarr)
+        atleast = round(N*pct)
+        print(atleast)
+        cnt = 0
+        l = 0
+        r = l+1
+        while l < N:
+            if onedarr[l]:
+                while r < N:
+                    if onedarr[r]:
+                        r += 1
+                    else:
+                        break
+                # followup
+                if r-l >= atleast:
+                    cnt += r-l
+                l = r+1
+                r = l+1
+            else:
+                l += 1
+                r = l+1
+        # print(cnt)
+        return cnt
+        
+        
+
     def Get_Fitness(self):
-        # stateOfLinkZero = p.getLinkState(self.id,0)
-        # positionOfLinkZero = stateOfLinkZero[0]
-        # xCoordinateOfLinkZero = positionOfLinkZero[0]
+        if self.type == 'pronking':
+            # moving forward as well
+            basePositionAndOrientation = p.getBasePositionAndOrientation(self.id)
+            basePosition = basePositionAndOrientation[0]
+            xPosition, yPosition, zPosition = basePosition
 
-        basePositionAndOrientation = p.getBasePositionAndOrientation(self.id)
-        basePosition = basePositionAndOrientation[0]
-        xPosition = basePosition[0]
+            # obj: maximize sum of length of longest substring s.t. all [-1s] (in the air) subjto minlen constraint
+            # the floor is lava: touching floor is penalty
+            legLinkNames = ["HindLeft", "HindRight", "FrontLeft", "FrontRight"]
+            merge_arr = np.concatenate([s.value for name, s in self.sensors.items() if name in legLinkNames]).reshape((c.ITER_STEPS, 4))
+            # oned = np.logical_or(np.all(merge_arr==1, 1), np.all(merge_arr==-1, 1))
+            fly_oned = np.all(merge_arr==-1, 1)
+            cnt = self.contigsubarrcount(fly_oned)
 
-        # with open(f'fitness{str(self.parID)}.txt', 'w+') as f:
-        #     f.write(str(xCoordinateOfLinkZero))
+            ground_oned = np.all(merge_arr==1, 1)*0.1
+            cnt -= self.contigsubarrcount(ground_oned)
 
-        with open(f'tmp{str(self.parID)}.txt', 'w+') as f:
-            f.write(str(xPosition))
+            xfactor = xPosition * cnt
+            zfactor = zPosition * cnt
+            cnt = xfactor + zfactor
+
+            #objF = (z^2 + x) * (fly-ground)
+
+            # count all legs in air or on ground, max airtime min ground time
+            # cnt = 0
+            # for i in range(c.ITER_STEPS):
+            #     # 6 sensors for 6 links, only want to look at the 4 legs
+            #     sensorvalues_i = [s.value[i] for name, s in self.sensors.items() if name in legLinkNames]
+            #     if sensorvalues_i.count(sensorvalues_i[0]) == len(sensorvalues_i):
+            #         # all same value (either all in air or all on ground)
+            #         cnt += 1
+
+            with open(f'tmp{str(self.parID)}.txt', 'w+') as f:
+                f.write(str(cnt))
+        else:
+            basePositionAndOrientation = p.getBasePositionAndOrientation(self.id)
+            basePosition = basePositionAndOrientation[0]
+            xPosition = basePosition[0]
+
+            # with open(f'fitness{str(self.parID)}.txt', 'w+') as f:
+            #     f.write(str(xCoordinateOfLinkZero))
+
+            with open(f'tmp{str(self.parID)}.txt', 'w+') as f:
+                f.write(str(xPosition))
 
         os.system(f"mv tmp{str(self.parID)}.txt fitness{str(self.parID)}.txt")
         

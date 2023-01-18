@@ -41,7 +41,7 @@ class Hillclimber():
 
     def Show_Best(self):
         self.parent.Evaluate("GUI")
-        print('end of sim best fitness:', self.parent.fitness)
+        print('end of sim best', self.parent.fitness)
 
     def Print(self):
         print('parent fn:', self.parent.fitness)

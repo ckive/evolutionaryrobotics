@@ -14,7 +14,7 @@
             // "args": [
             //     // "GUI",
             //     "DIRECT",
-            //     "1"
+            //     "0"
             // ],
             "console": "integratedTerminal",
             "justMyCode": true

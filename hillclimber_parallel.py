@@ -4,9 +4,6 @@ import copy, os
 
 class ParallelHillclimber():
     def __init__(self) -> None:
-        # self.parent = Solution()
-        # self.parents = {i: Solution(i) for i in range(c.POPULATIONSIZE)}
-
         # clear prev files (if any)
         os.system('rm brain*.nndf')
         os.system('rm fitness*.txt')
@@ -14,7 +11,7 @@ class ParallelHillclimber():
         self.nextparID = 0
         self.parents = {}
         for i in range(c.POPULATIONSIZE):
-            self.parents[i] = Solution(self.nextparID, self)
+            self.parents[i] = Solution(self.nextparID, self, type='pronking')
             self.nextparID += 1
         # print(self.parents)
         
@@ -66,16 +63,16 @@ class ParallelHillclimber():
 
     def Select(self):
         # select for moving towards (out of screen)
-        # for i, parent in self.parents.items():
-        #     if float(parent.fitness) < float(self.children[i].fitness):
-        #         # succession
-        #         self.parents[i] = self.children[i]
-
-        # select for moving into the screen (away)
         for i, parent in self.parents.items():
-            if float(self.children[i].fitness) < float(parent.fitness):
+            if float(parent.fitness) < float(self.children[i].fitness):
                 # succession
                 self.parents[i] = self.children[i]
+
+        # select for moving into the screen (away)
+        # for i, parent in self.parents.items():
+        #     if float(self.children[i].fitness) < float(parent.fitness):
+        #         # succession
+        #         self.parents[i] = self.children[i]
                 
 
     def Evaluate(self, solns):
@@ -84,23 +81,23 @@ class ParallelHillclimber():
         # evaluating all children in parallel
         # adam bc first generation
         for adam in solns.values():
-            print('evaluating!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            # print('evaluating!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             # adam.Start_Simulation("GUI")
             adam.Start_Simulation("DIRECT")
 
         for adam in solns.values():
-            print('collecting.............................................')
+            # print('collecting.............................................')
             adam.Wait_For_Simulation_To_End()
-            print('adam fitness:', adam.fitness)
+            # print('adam fitness:', adam.fitness)
 
 
 
     def Show_Best(self):
         pfitnesses = [float(p.fitness) for p in self.parents.values()]
         # want most negative
-        argm = pfitnesses.index(min(pfitnesses))
+        # argm = pfitnesses.index(min(pfitnesses))
         # want most positive
-        # argm = pfitnesses.index(max(pfitnesses))
+        argm = pfitnesses.index(max(pfitnesses))
         self.parents[argm].Start_Simulation("GUI")
         print('end of sim best fitness:', self.parents[argm].fitness)
 

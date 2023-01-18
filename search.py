@@ -1,5 +1,5 @@
 import os
-# from hillclimber import Hillclimber
+from hillclimber import Hillclimber
 from hillclimber_parallel import ParallelHillclimber
 
 # # normal hill climber
