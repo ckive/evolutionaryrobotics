@@ -10,8 +10,10 @@ class Solution():
 
     def Evaluate(self, sim_mode="DIRECT"):
         # should prob regen the brain here?
-        # self.CreateWorld()      # no change here really
-        # self.Generate_Body()    # no change here really
+        self.CreateWorld()      # no change here really
+        self.Generate_Body()    # no change here really
+        print("gen'd body")
+        # exit()
         self.Generate_Brain()   # this changes since self.weights was altered
         os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode}")
 

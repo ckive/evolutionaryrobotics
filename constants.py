@@ -5,4 +5,4 @@ All Constants
 
 ITER_STEPS = 1000
 LEG_FORCE = 30
-NUMGENS = 10
+NUMGENS = 1

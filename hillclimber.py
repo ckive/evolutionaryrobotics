@@ -1,10 +1,12 @@
 from solution import Solution
+from snake import SnakeSolution
 import constants as c
 import copy
 
 class Hillclimber():
     def __init__(self) -> None:
-        self.parent = Solution()
+        # self.parent = Solution()
+        self.parent = SnakeSolution()
 
 
     def Evolve(self):
