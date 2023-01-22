@@ -1,12 +1,10 @@
 from solution import Solution
+from snake import SnakeSolution
 import constants as c
 import copy, os
 
 class ParallelHillclimber():
     def __init__(self) -> None:
-        # self.parent = Solution()
-        # self.parents = {i: Solution(i) for i in range(c.POPULATIONSIZE)}
-
         # clear prev files (if any)
         os.system('rm brain*.nndf')
         os.system('rm fitness*.txt')
@@ -14,9 +12,9 @@ class ParallelHillclimber():
         self.nextparID = 0
         self.parents = {}
         for i in range(c.POPULATIONSIZE):
-            self.parents[i] = Solution(self.nextparID, self)
+            # self.parents[i] = Solution(self.nextparID, self)
+            self.parents[i] = SnakeSolution(self.nextparID, self)
             self.nextparID += 1
-        # print(self.parents)
         
         
 
@@ -24,8 +22,6 @@ class ParallelHillclimber():
     def Evolve(self):
         # call on parents
         self.Evaluate(self.parents)
-
-
 
         # mutate N generations
         for gen in range(c.NUMGENS):

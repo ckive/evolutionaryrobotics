@@ -33,28 +33,6 @@ class Solution():
         os.system(f'rm fitness{self.parID}.txt')
 
 
-    # def Evaluate(self, sim_mode="DIRECT"):
-    #     # should prob regen the brain here?
-    #     # self.CreateWorld()      # no change here really
-    #     # self.Generate_Body()    # no change here really
-    #     self.Generate_Brain(self.parID)   # this changes since self.weights was altered
-    #     # os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode}")
-    #     # spawn a new process
-    #     # silent
-    #     os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)} &")
-    #     # non silent
-    #     # os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)}")
-
-    #     while not os.path.exists(f"fitness{str(self.parID)}.txt"):
-    #         time.sleep(0.01)
-    #     print('fitness file found')
-
-    #     # read in new fitness score
-    #     with open(f'fitness{self.parID}.txt', 'r') as f:
-    #         self.fitness = f.read()
-    #         print('soln fn:', self.fitness)
-    #         # exit()
-
     def Mutate(self):
         mutRow, mutCol = random.randint(0,2), random.randint(0,1)
         self.weights[mutRow][mutCol] = random.random()*2-1
