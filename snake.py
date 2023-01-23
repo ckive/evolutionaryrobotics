@@ -38,9 +38,9 @@ class SnakeSolution(Solution):
 
         # Generate the Body here, all descendents come from the same body, parents have different bodies?
         self.Generate_Body()
-        exit()
+        # exit()
 
-    def _rdmsize(self, l=1, h=3, rnd=1):
+    def _rdmsize(self, l=0.2, h=2, rnd=1):
         # generates rndmsizes from l to h, sounded to rnd decimals
         return [round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd)]
 
@@ -101,10 +101,33 @@ class SnakeSolution(Solution):
             else:
                 joint_pos = [0,0,0]
                 joint_pos[direction] = lksize[direction]
+
+            # choose a random axis of rotation
+
+            jA = random.choice(["0 1 0", "1 0 0", "0 0 1"])
+
+            # # jointAxis: NO TWISTING, choose 1 of 2
+            # if direction == 0:
+            #     # choose between 0,1,0 and 
+            #     jA = "0 1 0"
+            # elif direction == 1:
+            #     jA = "1 0 0"
+            # else:
+            #     jA = "0 0 1"
             
             pyrosim.Send_Joint(
                 name = f"{link-1}_{link}" , parent= f"{link-1}" , 
-                child = f"{link}" , type = "revolute", position = joint_pos)    # axis of rotation...
+                child = f"{link}" , type = "revolute", position = joint_pos, jointAxis=jA)    # axis of rotation...
+
+            """
+            REMEMBER
+            basically whichever axis has 1 is the fixed axis
+            0,1,0           y doesnt change, swings on x,z      (original leg)
+            1,0,0           x doesnt change, swings on y,z      (wings flapping)
+            0,0,1           z doesnt change, swings on x,y      (head shake side2side, sweeping)
+            
+            
+            """
             
             lksize = self._rdmsize()
             link_pos = [0,0,0]
