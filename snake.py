@@ -18,7 +18,7 @@ class SnakeSolution(Solution):
 
         # it is 2 + numlinks links
         # self.numlinks = random.randint(0,10)
-        self.numlinks = 1
+        self.numlinks = 5
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
         for i in range(2, self.numlinks+2):
@@ -38,6 +38,7 @@ class SnakeSolution(Solution):
 
         # Generate the Body here, all descendents come from the same body, parents have different bodies?
         self.Generate_Body()
+        exit()
 
     def _rdmsize(self, l=1, h=3, rnd=1):
         # generates rndmsizes from l to h, sounded to rnd decimals
@@ -70,11 +71,48 @@ class SnakeSolution(Solution):
         lksize = self._rdmsize()
         pyrosim.Send_Cube(name="1", size=lksize, pos=[lksize[0]/2,0,0])
         
+        #0:x, 1:y, 2:z
+        lastdir = 0
+        
         for link, sensors in self.link2sensors.items():
-            pyrosim.Send_Joint(name = f"{link-1}_{link}" , parent= f"{link-1}" , child = f"{link}" , type = "revolute", position = [lksize[0],0,0])
+            # only grows in positive x,y,z
+            # randomly pick a direction
+            direction = random.randint(0,2)
+            
+            #xy
+            if lastdir == 0 and direction == 1:
+                joint_pos = [lksize[0]/2,lksize[1]/2,0]
+            #xz
+            elif lastdir == 0 and direction == 2:
+                joint_pos = [lksize[0]/2,0,lksize[2]/2]
+            #yx
+            elif lastdir == 1 and direction == 0:
+                joint_pos = [lksize[0]/2,lksize[1]/2,0]
+            #yz
+            elif lastdir == 1 and direction == 2:
+                joint_pos = [0,lksize[1]/2,lksize[2]/2]
+            #zx
+            elif lastdir == 2 and direction == 0:
+                joint_pos = [lksize[0]/2,0,lksize[2]/2]
+            #zy
+            elif lastdir == 2 and direction == 1:
+                joint_pos = [0,lksize[1]/2,lksize[2]/2]
+            # continue in same dir
+            else:
+                joint_pos = [0,0,0]
+                joint_pos[direction] = lksize[direction]
+            
+            pyrosim.Send_Joint(
+                name = f"{link-1}_{link}" , parent= f"{link-1}" , 
+                child = f"{link}" , type = "revolute", position = joint_pos)    # axis of rotation...
+            
             lksize = self._rdmsize()
-            pyrosim.Send_Cube(name=str(link), pos=[lksize[0]/2,0,0] , size=lksize)
+            link_pos = [0,0,0]
+            link_pos[direction] = lksize[direction]/2
 
+            pyrosim.Send_Cube(name=str(link), pos=link_pos , size=lksize)
+            
+            lastdir = direction
         pyrosim.End()
 
 
