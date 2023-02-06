@@ -17,8 +17,8 @@ class SnakeSolution(Solution):
         self.ptr2phc = ptr2phc
 
         # it is 2 + numlinks links
-        # self.numlinks = random.randint(0,10)
-        self.numlinks = 1
+        self.numlinks = random.randint(0,10)
+        # self.numlinks = 1
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
         for i in range(2, self.numlinks+2):
@@ -73,7 +73,11 @@ class SnakeSolution(Solution):
         for link, sensors in self.link2sensors.items():
             pyrosim.Send_Joint(name = f"{link-1}_{link}" , parent= f"{link-1}" , child = f"{link}" , type = "revolute", position = [lksize[0],0,0])
             lksize = self._rdmsize()
-            pyrosim.Send_Cube(name=str(link), pos=[lksize[0]/2,0,0] , size=lksize)
+            if "none" in sensors:
+                colors = [0,0,1,1]
+            else:
+                colors = [0,1,0,1]
+            pyrosim.Send_Cube(name=str(link), pos=[lksize[0]/2,0,0] , size=lksize, rgba=colors)
 
         pyrosim.End()
 
