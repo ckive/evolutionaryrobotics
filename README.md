@@ -1,6 +1,6 @@
 # evolutionaryrobotics
 
-link: 
+link: https://youtu.be/zjjNm6qq_7c
 
 Goal: have the creature "pronk/twerk" this was done by minimizing the time all legs touched the ground 
 
