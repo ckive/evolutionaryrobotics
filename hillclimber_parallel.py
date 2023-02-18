@@ -38,7 +38,7 @@ class ParallelHillclimber():
         self.Mutate()
         self.Evaluate(self.children)
         # exit()
-        self.Print()
+        # self.Print()
         self.Select()
 
     def Spawn(self):

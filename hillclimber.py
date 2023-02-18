@@ -25,7 +25,7 @@ class Hillclimber():
         self.Spawn()
         self.Mutate()
         self.child.Evaluate(sim_mode)
-        self.Print()
+        # self.Print()
         self.Select()
 
     def Spawn(self):
