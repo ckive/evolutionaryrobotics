@@ -51,7 +51,7 @@ class ParallelHillclimber():
             self.nextparID += 1
 
         
-        print('children parIDs spawned', [c.parID for c in self.children.values()])
+        # print('children parIDs spawned', [c.parID for c in self.children.values()])
         # exit()
 
 
@@ -80,14 +80,14 @@ class ParallelHillclimber():
         # evaluating all children in parallel
         # adam bc first generation
         for adam in solns.values():
-            print('evaluating!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+            # print('evaluating!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             # adam.Start_Simulation("GUI")
             adam.Start_Simulation("DIRECT")
 
         for adam in solns.values():
-            print('collecting.............................................')
+            # print('collecting.............................................')
             adam.Wait_For_Simulation_To_End()
-            print('adam fitness:', adam.fitness)
+            # print('adam fitness:', adam.fitness)
 
 
 
@@ -98,7 +98,7 @@ class ParallelHillclimber():
         # want most positive
         # argm = pfitnesses.index(max(pfitnesses))
         self.parents[argm].Start_Simulation("GUI")
-        print('end of sim best fitness:', self.parents[argm].fitness)
+        # print('end of sim best fitness:', self.parents[argm].fitness)
 
     def Print(self):
         print('')

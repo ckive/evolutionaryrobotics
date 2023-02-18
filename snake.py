@@ -31,7 +31,7 @@ class SnakeSolution(Solution):
                 self.link2sensors[i] += ['motor']
             if i not in self.link2sensors:
                 self.link2sensors[i] = ['none']
-        print('l2s', self.link2sensors)
+        # print('l2s', self.link2sensors)
 
         # weights is a {tupleof(senseNname,motorNname): float} mapping
         self.weights = {}

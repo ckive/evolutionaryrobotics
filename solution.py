@@ -21,12 +21,10 @@ class Solution():
     def Wait_For_Simulation_To_End(self):
         while not os.path.exists(f"fitness{str(self.parID)}.txt"):
             time.sleep(0.01)
-        print('fitness file found')
 
         # read in new fitness score
         with open(f'fitness{self.parID}.txt', 'r') as f:
             self.fitness = f.read()
-            print('soln fn:', self.fitness)
             # exit()
         
         # delete after reading

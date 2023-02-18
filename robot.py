@@ -27,7 +27,6 @@ class Robot():
         self.sensors = {}
         for linkName in pyrosim.linkNamesToIndices:
             self.sensors[linkName] = Sensor(linkName)
-        # print('my sensors',self.sensors)
 
     def Sense(self, t):
         for sensor in self.sensors.values():
@@ -37,7 +36,7 @@ class Robot():
         self.motors = {}
         for jointName in pyrosim.jointNamesToIndices:
             self.motors[jointName] = Motor(jointName)
-        # print(self.motors.keys())
+
 
     def Act(self, t):
         for neuronName in self.nn.Get_Neuron_Names():
@@ -47,9 +46,6 @@ class Robot():
                 # neuronName is int, motors.key is b"torso_etc"
                 self.motors[jointName.encode()].SetValue(self, desiredAngle)
 
-        # self.nn.Print()
-        # for motor in self.motors.values():
-        #     motor.SetValue(self, t)
 
     def Get_Fitness(self):
         stateOfLinkZero = p.getLinkState(self.id,0)
