@@ -40,7 +40,7 @@ class SnakeSolution(Solution):
         self.Generate_Body()
         # exit()
 
-    def _rdmsize(self, l=0.2, h=2, rnd=1):
+    def _rdmsize(self, l=0.5, h=1, rnd=1):
         # generates rndmsizes from l to h, sounded to rnd decimals
         return [round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd)]
 
@@ -66,10 +66,11 @@ class SnakeSolution(Solution):
         # manually add a root link and 2nd link starting at 0,0 with random size (placed above ground)
         # 2nd one needed bc need a root joint
         rootlksize = self._rdmsize()
-        pyrosim.Send_Cube(name="0", size=rootlksize, pos=[0,0,rootlksize[2]/2])
+        pyrosim.Send_Cube(name="0", size=rootlksize, pos=[0,0,rootlksize[2]/2], rgba=[0,1,0,1])
         pyrosim.Send_Joint(name = "0_1" , parent= "0" , child = "1" , type = "revolute", position = [rootlksize[0]/2,0,rootlksize[2]/2])
         lksize = self._rdmsize()
-        pyrosim.Send_Cube(name="1", size=lksize, pos=[lksize[0]/2,0,0])
+        pyrosim.Send_Cube(name="1", size=lksize, pos=[lksize[0]/2,0,0], rgba=[0,1,0,1])
+        
         
         #0:x, 1:y, 2:z
         lastdir = 0
@@ -133,7 +134,16 @@ class SnakeSolution(Solution):
             link_pos = [0,0,0]
             link_pos[direction] = lksize[direction]/2
 
-            pyrosim.Send_Cube(name=str(link), pos=link_pos , size=lksize)
+            # pyrosim.Send_Cube(name=str(link), pos=link_pos , size=lksize)
+
+            # check for sensors and color it
+            if "none" in sensors:
+                # blue
+                color = [0,0,1,1]
+            else:
+                # green
+                color = [0,1,0,1]
+            pyrosim.Send_Cube(name=str(link), pos=link_pos , size=lksize, rgba=color)
             
             lastdir = direction
         pyrosim.End()
