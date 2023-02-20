@@ -12,6 +12,18 @@ Creatures consist of anywhere between 5 to 20 body segments ('links'). Each body
 
 Each link's generation is checked against the links that have been generated to ensure no spawning parts that reside within the existing structure. (See examples)
 
+Pseudocode for link generation process:
+```
+randomly choose parent node to spawn from
+randomly choose an axis and direction to spawn
+randomly choose a link size
+for each existing link spawned:
+  check if the link size and given parent and direction will result in collision
+  if collide: re-generate
+# no collisions
+spawn into existence
+```
+
 ![Morphospace](body.png)
 
 Here is an example of how a creature could be generated. The blue and green squares are body parts and the red arrows show how the body parts are connected by joints.
