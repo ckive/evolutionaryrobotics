@@ -2,6 +2,8 @@ from solution import Solution
 from snake import SnakeSolution
 import constants as c
 import copy, os
+import numpy as np
+import matplotlib.pyplot as plt
 
 class ParallelHillclimber():
     def __init__(self) -> None:
@@ -9,12 +11,15 @@ class ParallelHillclimber():
         os.system('rm brain*.nndf')
         os.system('rm fitness*.txt')
 
+        self.fitnesshistory = np.zeros((c.POPULATIONSIZE, c.NUMGENS+1))
+
         self.nextparID = 0
         self.parents = {}
         for i in range(c.POPULATIONSIZE):
             # self.parents[i] = Solution(self.nextparID, self)
-            self.parents[i] = SnakeSolution(self.nextparID, self)
+            self.parents[i] = SnakeSolution(self.nextparID, self, self, 0, i)
             self.nextparID += 1
+
         
         
 
@@ -45,6 +50,7 @@ class ParallelHillclimber():
         self.children = {}
         for i, parent in self.parents.items():
             self.children[i] = copy.deepcopy(parent)
+            self.children[i].generation += 1
             # give children a differnt parID
             self.children[i].parID = self.nextparID
             self.nextparID += 1
@@ -100,3 +106,15 @@ class ParallelHillclimber():
         for i in self.parents:
             print('parent, child fn:', self.parents[i].fitness, self.children[i].fitness)
         print('')
+
+
+    def plot(self):
+        plt.title(f"Fitness Curve best creature in population in each of {c.NUMGENS} generations")
+        plt.xlabel("Generations")
+        plt.ylabel("Fitness")
+        # plt.plot(range(c.NUMGENS+1), np.max(self.fitnesshistory, axis=0))
+        for i, popgroup_fitnesshistory in enumerate(self.fitnesshistory):
+            plt.plot(range(c.NUMGENS+1), popgroup_fitnesshistory, label=f"pop_group_{i}")
+        plt.legend()
+        plt.savefig('fitnesscurve.png')
+        

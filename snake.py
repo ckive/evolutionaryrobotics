@@ -79,7 +79,7 @@ class Box:
 
 
 class SnakeSolution(Solution):
-    def __init__(self, parID, ptr2phc) -> None:
+    def __init__(self, parID, ptr2phc, phcObj, gen, popgroup) -> None:
         """
         random # of boxes, size of boxes, touch sensors
             limit to boxes, 
@@ -88,9 +88,12 @@ class SnakeSolution(Solution):
         """
         self.parID = parID
         self.ptr2phc = ptr2phc
+        self.phcObj = phcObj
+        self.generation = gen
+        self.popgroup = popgroup
 
-        self.numlinks = random.randint(5,20)
-        # self.numlinks = 6
+        # self.numlinks = random.randint(5,20)
+        self.numlinks = 6
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
         for i in range(0, self.numlinks):

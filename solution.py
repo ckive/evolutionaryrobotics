@@ -4,11 +4,14 @@ import random, os, time
 import pybullet as p
 
 class Solution():
-    def __init__(self, parID, ptr2phc) -> None:
+    def __init__(self, parID, ptr2phc, phcObj, gen, popgroup) -> None:
         self.weights = 2*np.random.rand(3,2)-1  #[-1,1]
         # NOTE, robot.id is robotID, solution.parID is for parallelism concept ID
         self.parID = parID
         self.ptr2phc = ptr2phc
+        self.phcObj = phcObj
+        self.generation = gen
+        self.popgroup = popgroup
 
     def Start_Simulation(self, sim_mode="DIRECT"):
         self.Generate_Brain(self.parID)   # this changes since self.weights was altered
@@ -25,6 +28,8 @@ class Solution():
         # read in new fitness score
         with open(f'fitness{self.parID}.txt', 'r') as f:
             self.fitness = f.read()
+            # add into phcObj for tracking and plotting 
+            self.phcObj.fitnesshistory[self.popgroup][self.generation] = self.fitness
             # exit()
         
         # delete after reading

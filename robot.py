@@ -44,7 +44,11 @@ class Robot():
                 jointName = self.nn.Get_Motor_Neurons_Joint(neuronName)
                 desiredAngle = self.nn.Get_Value_Of(neuronName)
                 # neuronName is int, motors.key is b"torso_etc"
+                # print(self.motors.keys())
+                # print(jointName)
                 self.motors[jointName.encode()].SetValue(self, desiredAngle)
+                # exit()
+                # self.motors[jointName].SetValue(self, desiredAngle)
 
 
     def Get_Fitness(self):

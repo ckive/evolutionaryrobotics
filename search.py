@@ -5,3 +5,4 @@ from hillclimber_parallel import ParallelHillclimber
 phc = ParallelHillclimber()
 phc.Evolve()
 phc.Show_Best()
+phc.plot()
