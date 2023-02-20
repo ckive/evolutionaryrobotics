@@ -5,24 +5,94 @@ import pybullet as p
 from solution import Solution
 from collections import defaultdict as dd
 
+def add_list(l1, l2):
+    # does np list adding
+    return [sum(x) for x in zip(l1, l2)]
+
+class Box:
+    def __init__(self, name, size, parbox, direc, sensors) -> None:
+        # spawning post collision check
+        self.name = name
+        self.size = size
+        self.sensors = sensors
+
+        if "none" in sensors:
+            # blue
+            color = [0,0,1,1]
+        else:
+            # green
+            color = [0,1,0,1]
+        
+        if direc == 0:
+            # root link
+            self.abspos = [0,0,self.size[2]/2]
+            self.relpos = [0,0,self.size[2]/2]      # relpos is to link
+            self.jointpos = [0,0,0]
+            pyrosim.Send_Cube(name="0", size=self.size, pos=self.abspos, rgba=color)
+        else:
+            negative = -1 if direc < 0 else 1
+            axis = abs(direc)
+            # joint_pos = parbox.relpos += dir halfsize
+            
+            joint_pos = parbox.relpos
+            if axis == 1:
+                joint_pos[0] += negative*parbox.size[0]/2
+                self.relpos = [negative*self.size[0]/2, 0, 0]
+
+            elif axis == 2:
+                joint_pos[1] += negative*parbox.size[1]/2
+                self.relpos = [0, negative*self.size[1]/2, 0]
+            else:
+                joint_pos[2] += negative*parbox.size[2]/2
+                self.relpos = [0, 0, negative*self.size[2]/2]
+
+            self.abspos = add_list(joint_pos, self.relpos)
+            
+            jA = random.choice(["0 1 0", "1 0 0", "0 0 1"])
+            pyrosim.Send_Joint(
+                name = f"{parbox.name}_{self.name}" , parent= f"{parbox.name}" , 
+                child = f"{self.name}" , type = "revolute", position = joint_pos, jointAxis=jA)    # axis of rotation...
+
+            pyrosim.Send_Cube(name=self.name, size=self.size, pos=self.relpos, rgba=color)
+    
+    def get_abspos(self):
+        return self.abspos.copy()
+
+
+    def collide(self, newboxsize, newboxposn) -> bool:
+        # returns T if collides with me, else False
+        # https://stackoverflow.com/questions/5009526/overlapping-cubes
+        # Determining overlap in the x plane
+        c1 = self.abspos[0]+self.size[0]/2 > newboxposn[0]-newboxsize[0]/2
+        c2 = self.abspos[0]-self.size[0]/2 < newboxposn[0]+newboxsize[0]/2
+        # Determining overlap in the y plane
+        c3 = self.abspos[1]+self.size[1]/2 > newboxposn[1]-newboxsize[1]/2
+        c4 = self.abspos[1]-self.size[1]/2 < newboxposn[1]+newboxsize[1]/2
+        # Determining overlap in the z plane
+        c5 = self.abspos[2]+self.size[2]/2 > newboxposn[2]-newboxsize[2]/2
+        c6 = self.abspos[2]-self.size[2]/2 < newboxposn[2]+newboxsize[2]/2
+
+        return c1 and c2 and c3 and c4 and c5 and c6
+
+    
+
+
 class SnakeSolution(Solution):
     def __init__(self, parID, ptr2phc) -> None:
         """
         random # of boxes, size of boxes, touch sensors
             limit to boxes, 
-            randomsizes:[0.2, 2]
+            randomsizes:
             random sensesensors, and motorsensors
         """
         self.parID = parID
         self.ptr2phc = ptr2phc
 
-        # it is 2 + numlinks links
-        # self.numlinks = random.randint(0,10)
-        self.numlinks = 5
+        # self.numlinks = random.randint(5,15)
+        self.numlinks = 6
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
-        for i in range(2, self.numlinks+2):
-            # note start at 2 bc we make first 2 permanent
+        for i in range(0, self.numlinks):
             if random.randint(0,1):
                 # add a sense sensor to link
                 self.link2sensors[i] += ['sense']
@@ -31,18 +101,18 @@ class SnakeSolution(Solution):
                 self.link2sensors[i] += ['motor']
             if i not in self.link2sensors:
                 self.link2sensors[i] = ['none']
-        # print('l2s', self.link2sensors)
 
         # weights is a {tupleof(senseNname,motorNname): float} mapping
         self.weights = {}
+
+        # Directions iterable, #1:x, 2:y, 3:z with corresponding negatives
+        self.Dir = self.choose_rdm_dir()
 
         # Generate the Body here, all descendents come from the same body, parents have different bodies?
         self.Generate_Body()
         # exit()
 
-    def _rdmsize(self, l=0.5, h=1, rnd=1):
-        # generates rndmsizes from l to h, sounded to rnd decimals
-        return [round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd)]
+    
 
     """
     Inherits these
@@ -58,94 +128,71 @@ class SnakeSolution(Solution):
         self.weights[mutatekey] = random.random()*2-1
 
 
+    def choose_rdm_dir(self):
+        while True:
+            yield random.choice([-1,1,-2,2,-3,3])
+
+    def _rdmsize(self, l=0.5, h=1, rnd=1):
+        # generates rndmsizes from l to h, sounded to rnd decimals
+        return [round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd)]
+
+    def spawn_next_link(self, linkname, sensors) -> None:
+        """
+        randomly chooses
+            parent from realcubes
+            cubesize
+            direction
+        until spawnable, spawns the box via instantiating Box()
+        """
+        spawnable = False
+        while not spawnable:
+            parent_name, parent_Box = random.choice(list(self.realcubes.items()))
+            lksize = self._rdmsize()
+            direction = next(self.Dir)
+            # calc newbox_absposn -> parentbox in given direction + lksize
+            axis = abs(direction)
+            negative = -1 if direction < 0 else 1
+            newbox_absposn = parent_Box.get_abspos()
+            if axis == 1: #x
+                newbox_absposn[0] += parent_Box.size[0]/2 + negative*lksize[0]/2
+            elif axis == 2: #y
+                newbox_absposn[1] += parent_Box.size[1]/2 + negative*lksize[1]/2
+            else: #z
+                newbox_absposn[2] += parent_Box.size[2]/2 + negative*lksize[2]/2
+    
+            spawnable = not self.collides_with_others(lksize, newbox_absposn)
+        # spawnable now
+        newlink = Box(linkname, lksize, parent_Box, direction, sensors)
+        self.realcubes[linkname] = newlink
+        return
+
+    def collides_with_others(self, newboxsize, newboxposn) -> bool:
+        # goes thru list of spawned boxes and checks if box hits it
+        for realbox in self.realcubes.values():
+            if realbox.collide(newboxsize, newboxposn):
+                return True
+        return False
+
     def Generate_Body(self):
         """
-        only generate to +x direction
+        generate like madman
         """
+        # stores true spawned cubes (used for picking spawn point of next cube)
+        # name: (size, absposition)
+        self.realcubes = {}
+
         pyrosim.Start_URDF("body.urdf")
-        # manually add a root link and 2nd link starting at 0,0 with random size (placed above ground)
-        # 2nd one needed bc need a root joint
-        rootlksize = self._rdmsize()
-        pyrosim.Send_Cube(name="0", size=rootlksize, pos=[0,0,rootlksize[2]/2], rgba=[0,1,0,1])
-        pyrosim.Send_Joint(name = "0_1" , parent= "0" , child = "1" , type = "revolute", position = [rootlksize[0]/2,0,rootlksize[2]/2])
-        lksize = self._rdmsize()
-        pyrosim.Send_Cube(name="1", size=lksize, pos=[lksize[0]/2,0,0], rgba=[0,1,0,1])
-        
-        
-        #0:x, 1:y, 2:z
-        lastdir = 0
+       
         
         for link, sensors in self.link2sensors.items():
-            # only grows in positive x,y,z
-            # randomly pick a direction
-            direction = random.randint(0,2)
-            
-            #xy
-            if lastdir == 0 and direction == 1:
-                joint_pos = [lksize[0]/2,lksize[1]/2,0]
-            #xz
-            elif lastdir == 0 and direction == 2:
-                joint_pos = [lksize[0]/2,0,lksize[2]/2]
-            #yx
-            elif lastdir == 1 and direction == 0:
-                joint_pos = [lksize[0]/2,lksize[1]/2,0]
-            #yz
-            elif lastdir == 1 and direction == 2:
-                joint_pos = [0,lksize[1]/2,lksize[2]/2]
-            #zx
-            elif lastdir == 2 and direction == 0:
-                joint_pos = [lksize[0]/2,0,lksize[2]/2]
-            #zy
-            elif lastdir == 2 and direction == 1:
-                joint_pos = [0,lksize[1]/2,lksize[2]/2]
-            # continue in same dir
+            linkname = str(link)
+            if link == 0:
+                # generate root link
+                self.realcubes[linkname] = Box(linkname, self._rdmsize(), None, 0, sensors)
             else:
-                joint_pos = [0,0,0]
-                joint_pos[direction] = lksize[direction]
-
-            # choose a random axis of rotation
-
-            jA = random.choice(["0 1 0", "1 0 0", "0 0 1"])
-
-            # # jointAxis: NO TWISTING, choose 1 of 2
-            # if direction == 0:
-            #     # choose between 0,1,0 and 
-            #     jA = "0 1 0"
-            # elif direction == 1:
-            #     jA = "1 0 0"
-            # else:
-            #     jA = "0 0 1"
-            
-            pyrosim.Send_Joint(
-                name = f"{link-1}_{link}" , parent= f"{link-1}" , 
-                child = f"{link}" , type = "revolute", position = joint_pos, jointAxis=jA)    # axis of rotation...
-
-            """
-            REMEMBER
-            basically whichever axis has 1 is the fixed axis
-            0,1,0           y doesnt change, swings on x,z      (original leg)
-            1,0,0           x doesnt change, swings on y,z      (wings flapping)
-            0,0,1           z doesnt change, swings on x,y      (head shake side2side, sweeping)
-            
-            
-            """
-            
-            lksize = self._rdmsize()
-            link_pos = [0,0,0]
-            link_pos[direction] = lksize[direction]/2
-
-            # pyrosim.Send_Cube(name=str(link), pos=link_pos , size=lksize)
-
-            # check for sensors and color it
-            if "none" in sensors:
-                # blue
-                color = [0,0,1,1]
-            else:
-                # green
-                color = [0,1,0,1]
-            pyrosim.Send_Cube(name=str(link), pos=link_pos , size=lksize, rgba=color)
-            
-            lastdir = direction
+                # subsequent links
+                self.spawn_next_link(linkname, sensors)
+        
         pyrosim.End()
 
 

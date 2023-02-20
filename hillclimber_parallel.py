@@ -42,17 +42,12 @@ class ParallelHillclimber():
         self.Select()
 
     def Spawn(self):
-        # self.child = copy.deepcopy(self.parent)
         self.children = {}
         for i, parent in self.parents.items():
             self.children[i] = copy.deepcopy(parent)
             # give children a differnt parID
             self.children[i].parID = self.nextparID
             self.nextparID += 1
-
-        
-        # print('children parIDs spawned', [c.parID for c in self.children.values()])
-        # exit()
 
 
     def Mutate(self):

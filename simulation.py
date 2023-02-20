@@ -78,7 +78,6 @@ class Simulation:
                 # slow it down for viewing
                 time.sleep(1/2000)
             # print(t)
-        # print([ssr.value for ssr in self.robot.sensors.values()])
         
 
     def Save_Values(self):
