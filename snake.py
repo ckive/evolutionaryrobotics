@@ -15,6 +15,7 @@ class Box:
         self.name = name
         self.size = size
         self.sensors = sensors
+        self.parbox = parbox
 
         if "none" in sensors:
             # blue
@@ -88,11 +89,15 @@ class SnakeSolution(Solution):
         self.parID = parID
         self.ptr2phc = ptr2phc
 
-        # self.numlinks = random.randint(5,15)
-        self.numlinks = 6
+        self.numlinks = random.randint(5,20)
+        # self.numlinks = 6
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
         for i in range(0, self.numlinks):
+            if i == 0:
+                # don't allow root node to have motor
+                self.link2sensors[i] = ['none']
+                continue
             if random.randint(0,1):
                 # add a sense sensor to link
                 self.link2sensors[i] += ['sense']
@@ -104,9 +109,6 @@ class SnakeSolution(Solution):
 
         # weights is a {tupleof(senseNname,motorNname): float} mapping
         self.weights = {}
-
-        # Directions iterable, #1:x, 2:y, 3:z with corresponding negatives
-        self.Dir = self.choose_rdm_dir()
 
         # Generate the Body here, all descendents come from the same body, parents have different bodies?
         self.Generate_Body()
@@ -128,10 +130,6 @@ class SnakeSolution(Solution):
         self.weights[mutatekey] = random.random()*2-1
 
 
-    def choose_rdm_dir(self):
-        while True:
-            yield random.choice([-1,1,-2,2,-3,3])
-
     def _rdmsize(self, l=0.5, h=1, rnd=1):
         # generates rndmsizes from l to h, sounded to rnd decimals
         return [round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd),round(random.uniform(l, h), rnd)]
@@ -148,7 +146,8 @@ class SnakeSolution(Solution):
         while not spawnable:
             parent_name, parent_Box = random.choice(list(self.realcubes.items()))
             lksize = self._rdmsize()
-            direction = next(self.Dir)
+            #1:x, 2:y, 3:z with corresponding negatives
+            direction = random.choice([-1,1,-2,2,-3,3])
             # calc newbox_absposn -> parentbox in given direction + lksize
             axis = abs(direction)
             negative = -1 if direction < 0 else 1
@@ -204,15 +203,14 @@ class SnakeSolution(Solution):
         
         senseNnames = []
         motorNnames = []
-        for link, sensors in self.link2sensors.items():
-            for s in sensors:
+        for link, box in self.realcubes.items():
+            for s in box.sensors:
                 if s == 'sense':
                     pyrosim.Send_Sensor_Neuron(name = f"{link}_sense" , linkName = str(link))
                     senseNnames.append(f"{link}_sense")
                 elif s == 'motor':
-                    # assume its the one that connects to the link'th link
-                    pyrosim.Send_Motor_Neuron( name = f"{link-1}_{link}_motor" , jointName = f"{link-1}_{link}")
-                    motorNnames.append(f"{link-1}_{link}_motor")
+                    pyrosim.Send_Motor_Neuron( name = f"{box.parbox.name}_{box.name}_motor" , jointName = f"{box.parbox.name}_{box.name}")
+                    motorNnames.append(f"{box.parbox.name}_{box.name}_motor")
 
         # to run phc, must ensure there are things to mutate upon (must have synapses ==> must have sense AND motors)
         # if no sensors or motors, create a motor of last 2 links
@@ -220,8 +218,8 @@ class SnakeSolution(Solution):
             pyrosim.Send_Sensor_Neuron(name = f"{link}_sense" , linkName = str(link))
             senseNnames.append(f"{link}_sense")
         if not motorNnames:
-            pyrosim.Send_Motor_Neuron( name = f"{link-1}_{link}_motor" , jointName = f"{link-1}_{link}")
-            motorNnames.append(f"{link-1}_{link}_motor")
+            pyrosim.Send_Motor_Neuron( name = f"{box.parbox.name}_{box.name}_motor" , jointName = f"{box.parbox.name}_{box.name}")
+            motorNnames.append(f"{box.parbox.name}_{box.name}_motor")
 
         for senseNeuron in senseNnames:
             for motorNeuron in motorNnames:
