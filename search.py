@@ -8,6 +8,6 @@ random.seed(0)
 # parallel HC
 phc = ParallelHillclimber()
 phc.Evolve()
-phc.Show_Best()
+phc.Show_Best(write=True)
 phc.plot()
 

@@ -14,9 +14,7 @@ class Robot():
         self.parID = parID
 
         # ensure that brain{parID} exists prior to here (GenBrain called in Soln.Eval() which is called thru search -> PHC -> Soln)
-        self.nn = NEURAL_NETWORK(f"brain{parID}.nndf")
-        # delete after being read
-        os.system(f"rm brain{parID}.nndf")
+        self.nn = NEURAL_NETWORK(f"brain{popgroup}.nndf")
 
         # pyrosim needs setup b4 using sensors
         pyrosim.Prepare_To_Simulate(self.id)    # this is link id (not parID)
@@ -43,20 +41,7 @@ class Robot():
             if self.nn.Is_Motor_Neuron(neuronName):
                 jointName = self.nn.Get_Motor_Neurons_Joint(neuronName)
                 desiredAngle = self.nn.Get_Value_Of(neuronName)
-                # neuronName is int, motors.key is b"torso_etc"
-                # print(self.motors.keys())
-                # print(jointName)
                 self.motors[jointName.encode()].SetValue(self, desiredAngle)
-                # try:
-                #     self.motors[jointName.encode()].SetValue(self, desiredAngle)
-                #     print('found',jointName)
-                # except:
-                #     print(self.motors.keys())
-                #     print(f"can't find {jointName}")
-
-
-                # exit()
-                # self.motors[jointName].SetValue(self, desiredAngle)
 
 
     def Get_Fitness(self):

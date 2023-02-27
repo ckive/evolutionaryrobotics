@@ -4,21 +4,25 @@ import random, os, time
 import pybullet as p
 
 class Solution():
-    def __init__(self, parID, ptr2phc, phcObj, gen, popgroup) -> None:
+    def __init__(self, parID, ptr2phc, gen, popgroup) -> None:
         self.weights = 2*np.random.rand(3,2)-1  #[-1,1]
         # NOTE, robot.id is robotID, solution.parID is for parallelism concept ID
         self.parID = parID
         self.ptr2phc = ptr2phc
-        self.phcObj = phcObj
         self.generation = gen
         self.popgroup = popgroup
 
     def Start_Simulation(self, sim_mode="DIRECT", parent=False):
-        self.Generate_Brain(self.parID)   # this changes since self.weights was altered
+        # only gen brain for parent generation, subsequent generations mutates the brain
+        if parent:
+            self.Write_Brain(self.popgroup, generate=parent)
+        else:
+            self.Write_Brain(self.popgroup)
+        
         # spawn a new process
         # silent
         os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)} {self.popgroup} &")
-        print('spawned process')
+        # print('spawned process')
         # non silent
         # os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)}")
 
@@ -29,17 +33,15 @@ class Solution():
         # read in new fitness score
         with open(f'fitness{self.parID}.txt', 'r') as f:
             self.fitness = f.read()
-            # add into phcObj for tracking and plotting 
-            self.phcObj.fitnesshistory[self.popgroup][self.generation] = self.fitness
             # exit()
         
         # delete after reading
         os.system(f'rm fitness{self.parID}.txt')
 
 
-    def Mutate(self):
-        mutRow, mutCol = random.randint(0,2), random.randint(0,1)
-        self.weights[mutRow][mutCol] = random.random()*2-1
+    # def Mutate(self):
+    #     mutRow, mutCol = random.randint(0,2), random.randint(0,1)
+    #     self.weights[mutRow][mutCol] = random.random()*2-1
 
     def Set_ID(self):
         # updates PHC's self.nextID for every children we spawn
@@ -63,7 +65,7 @@ class Solution():
     #     pyrosim.End()
 
 
-    # def Generate_Brain(self, parID):
+    # def Write_Brain(self, parID):
     #     pyrosim.Start_NeuralNetwork(f"brain{parID}.nndf")
     #     pyrosim.Send_Sensor_Neuron(name = 0 , linkName = "Torso")
     #     pyrosim.Send_Sensor_Neuron(name = 1 , linkName = "BackLeg")

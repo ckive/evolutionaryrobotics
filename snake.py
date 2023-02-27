@@ -80,7 +80,7 @@ class Box:
 
 
 class SnakeSolution(Solution):
-    def __init__(self, parID, ptr2phc, phcObj, gen, popgroup) -> None:
+    def __init__(self, parID, ptr2phc, gen, popgroup) -> None:
         """
         random # of boxes, size of boxes, touch sensors
             limit to boxes, 
@@ -89,11 +89,10 @@ class SnakeSolution(Solution):
         """
         self.parID = parID
         self.ptr2phc = ptr2phc
-        self.phcObj = phcObj
         self.generation = gen
         self.popgroup = popgroup
 
-        self.numlinks = random.randint(5,10)
+        self.numlinks = random.randint(5,15)
         # self.numlinks = 15
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
@@ -185,7 +184,7 @@ class SnakeSolution(Solution):
                 return True
         return False
 
-    def Generate_Body(self, popgroup):
+    def Generate_Body(self, popgroup, mut=False):
         """
         generate like madman
         """
@@ -207,12 +206,37 @@ class SnakeSolution(Solution):
         
         pyrosim.End()
 
+    def _Mutate_Body(self, popgroup, p=0.5):
+        if not random.choice(p):
+            return
+        # otherwise, mutate leaf parts
+        ln, ll = self.realcubes.items()[-1]
+        parboxes = [pb.parbox for pb in self.realcubes.values()]
+        lfnodes = [ln for ln in self.realcubes.values() if ln not in parboxes]
+        ln = random.choice(lfnodes)
+        todeljt = []
+        for jt in self.weights.keys():
+            if ln in jt:
+                todeljt.append(jt)
 
-    def Generate_Brain(self, parID):
+        for jt in todeljt:
+            del self.weights[jt]
+        
+        # flush
+        self.Write_Brain(popgroup)
+
+        self.Generate_Body(popgroup, mut=True)
+
+
+
+
+    def Write_Brain(self, popgroup, generate=False):
         """
         create sensors and motors and generate weights for those synapses
+        Creates brain only done at beginning of a popgroup
+        Mutates brain at subsequent calls
         """
-        pyrosim.Start_NeuralNetwork(f"brain{parID}.nndf")
+        pyrosim.Start_NeuralNetwork(f"brain{popgroup}.nndf")
         
         senseNnames = []
         motorNnames = []
@@ -236,10 +260,17 @@ class SnakeSolution(Solution):
 
         for senseNeuron in senseNnames:
             for motorNeuron in motorNnames:
-                # generate the weights here
-                rdm_wt = random.random()*2-1
                 tuplekey = (senseNeuron, motorNeuron)
-                self.weights[tuplekey] = rdm_wt
+                if generate:
+                    # generate the weights here
+                    rdm_wt = random.random()*2-1
+                    self.weights[tuplekey] = rdm_wt
+                
+                # otherwise, write weights into file based on mutation in self.weights
                 pyrosim.Send_Synapse( sourceNeuronName = senseNeuron , targetNeuronName = motorNeuron , weight = self.weights[tuplekey] )
                 
         pyrosim.End()
+
+    def Mutate_Body(self):
+        # self._Mutate_Body()
+        return

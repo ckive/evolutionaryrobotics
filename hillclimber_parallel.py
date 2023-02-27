@@ -8,17 +8,18 @@ import matplotlib.pyplot as plt
 class ParallelHillclimber():
     def __init__(self) -> None:
         # clear prev files (if any)
-        os.system('rm body*.nndf')
+        os.system('rm body*.urdf')
         os.system('rm brain*.nndf')
         os.system('rm fitness*.txt')
 
-        self.fitnesshistory = np.zeros((c.POPULATIONSIZE, c.NUMGENS+1))
+        # best_fitness_history
+        self.bfh = [0]
 
         self.nextparID = 0
         self.parents = {}
         for i in range(c.POPULATIONSIZE):
             # self.parents[i] = Solution(self.nextparID, self)
-            self.parents[i] = SnakeSolution(self.nextparID, self, self, 0, i)
+            self.parents[i] = SnakeSolution(self.nextparID, self, 0, i)
             self.nextparID += 1
 
         
@@ -36,9 +37,13 @@ class ParallelHillclimber():
 
 
     def Evolve_For_One_Generation(self, sim_mode):
+        print("C")
         self.Spawn()
+        print("D")
         self.Mutate()
+        print("E")
         self.Evaluate(self.children)
+        print("F")
         # exit()
         # self.Print()
         self.Select()
@@ -46,7 +51,10 @@ class ParallelHillclimber():
     def Spawn(self):
         self.children = {}
         for i, parent in self.parents.items():
+            print(parent.popgroup)
             self.children[i] = copy.deepcopy(parent)
+            print(self.children[i].popgroup)
+            print("F")
             self.children[i].generation += 1
             # give children a differnt parID
             self.children[i].parID = self.nextparID
@@ -56,6 +64,7 @@ class ParallelHillclimber():
     def Mutate(self):
         for child in self.children.values():
             child.Mutate()
+            child.Mutate_Body()
 
 
     def Select(self):
@@ -65,38 +74,47 @@ class ParallelHillclimber():
         #         # succession
         #         self.parents[i] = self.children[i]
 
+        thisgenfitness = np.zeros(c.POPULATIONSIZE)
+
         # select for moving into the screen (away)
         for i, parent in self.parents.items():
             if float(self.children[i].fitness) < float(parent.fitness):
                 # succession
                 self.parents[i] = self.children[i]
+            thisgenfitness[i] = float(self.children[i].fitness)
+        
+        highestfitness = min(self.bfh[-1], thisgenfitness.min())
+        # assuming -1th is max
+        
+        self.bfh.append(highestfitness)
                 
 
     def Evaluate(self, solns, parent=False):
-        # make sure solns is the whole dict
-
-        # evaluating all children in parallel
-        # adam bc first generation
         for adam in solns.values():
-            # print('evaluating!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             # adam.Start_Simulation("GUI")
             adam.Start_Simulation("DIRECT", parent=parent)
 
+        print("A")
+
         for adam in solns.values():
-            # print('collecting.............................................')
             adam.Wait_For_Simulation_To_End()
-            # print('adam fitness:', adam.fitness)
+        print("B")
 
 
 
-    def Show_Best(self):
+    def Show_Best(self, write=False):
         pfitnesses = [float(p.fitness) for p in self.parents.values()]
         # want most negative
         argm = pfitnesses.index(min(pfitnesses))
         # want most positive
         # argm = pfitnesses.index(max(pfitnesses))
+        
         self.parents[argm].Start_Simulation("GUI")
         # print('end of sim best fitness:', self.parents[argm].fitness)
+        if write:
+            with open('best.txt', 'w') as fp:
+                fp.write(f"{argm}")
+        return argm
 
     def Print(self):
         print('')
@@ -106,12 +124,15 @@ class ParallelHillclimber():
 
 
     def plot(self):
+        # *-1 bc we're looking for furthest -x
+        self.bfh = np.array(self.bfh[1:])*-1
+        # np.savetxt("ftinesshistory.csv", self.bfh, delimiter=",")
+        # print(self.bfh)
+
         plt.title(f"Fitness Curve best creature in population in each of {c.NUMGENS} generations")
         plt.xlabel("Generations")
         plt.ylabel("Fitness")
-        # plt.plot(range(c.NUMGENS+1), np.max(self.fitnesshistory, axis=0))
-        for i, popgroup_fitnesshistory in enumerate(self.fitnesshistory):
-            plt.plot(range(c.NUMGENS+1), popgroup_fitnesshistory, label=f"pop_group_{i}")
-        plt.legend()
+        plt.plot(range(1,c.NUMGENS+1), self.bfh)
+
         plt.savefig('fitnesscurve.png')
         

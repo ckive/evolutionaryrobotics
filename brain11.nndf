@@ -1,0 +1,26 @@
+<neuralNetwork>
+    <neuron name = "1_sense" type = "sensor" linkName = "1" />
+    <neuron name = "0_1_motor" type = "motor"  jointName = "0_1" />
+    <neuron name = "0_2_motor" type = "motor"  jointName = "0_2" />
+    <neuron name = "3_sense" type = "sensor" linkName = "3" />
+    <neuron name = "3_4_motor" type = "motor"  jointName = "3_4" />
+    <neuron name = "5_sense" type = "sensor" linkName = "5" />
+    <neuron name = "6_sense" type = "sensor" linkName = "6" />
+    <neuron name = "5_7_motor" type = "motor"  jointName = "5_7" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "0_1_motor" weight = "-0.2874756207699294" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "0_2_motor" weight = "0.42666813729596864" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "3_4_motor" weight = "-0.7667331380776832" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "5_7_motor" weight = "-0.24231785055905286" />
+    <synapse sourceNeuronName = "3_sense" targetNeuronName = "0_1_motor" weight = "0.5177316118440234" />
+    <synapse sourceNeuronName = "3_sense" targetNeuronName = "0_2_motor" weight = "-0.3806232760357864" />
+    <synapse sourceNeuronName = "3_sense" targetNeuronName = "3_4_motor" weight = "0.7119448000501487" />
+    <synapse sourceNeuronName = "3_sense" targetNeuronName = "5_7_motor" weight = "0.7281201482043185" />
+    <synapse sourceNeuronName = "5_sense" targetNeuronName = "0_1_motor" weight = "-0.6215551695472832" />
+    <synapse sourceNeuronName = "5_sense" targetNeuronName = "0_2_motor" weight = "0.2991755947832051" />
+    <synapse sourceNeuronName = "5_sense" targetNeuronName = "3_4_motor" weight = "0.2788329152249196" />
+    <synapse sourceNeuronName = "5_sense" targetNeuronName = "5_7_motor" weight = "-0.6604895763413379" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "0_1_motor" weight = "0.11555341123094953" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "0_2_motor" weight = "-0.04951597811898267" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "3_4_motor" weight = "-0.5185236173963663" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "5_7_motor" weight = "0.4259965646814958" />
+</neuralNetwork>
