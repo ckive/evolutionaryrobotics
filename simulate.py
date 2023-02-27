@@ -9,7 +9,8 @@ from simulation import Simulation
 # cli 
 directOrGUI = sys.argv[1]
 parID = sys.argv[2]
+popgroup = sys.argv[3]
 
-sim = Simulation(directOrGUI, parID)
+sim = Simulation(directOrGUI, parID, popgroup)
 sim.run()
 sim.Get_Fitness()

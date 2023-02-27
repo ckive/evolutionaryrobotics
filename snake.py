@@ -1,4 +1,3 @@
-import numpy as np
 import pyrosim.pyrosim as pyrosim
 import random, os
 import pybullet as p
@@ -10,7 +9,7 @@ def add_list(l1, l2):
     return [sum(x) for x in zip(l1, l2)]
 
 class Box:
-    def __init__(self, name, size, parbox, direc, sensors) -> None:
+    def __init__(self, name, size, parbox, direc, sensors, myabsposn=[0,0,0]) -> None:
         # spawning post collision check
         self.name = name
         self.size = size
@@ -28,6 +27,7 @@ class Box:
             # root link
             self.abspos = [0,0,self.size[2]/2]
             self.relpos = [0,0,self.size[2]/2]      # relpos is to link
+            # maybe [0,0,0] here
             self.jointpos = [0,0,0]
             pyrosim.Send_Cube(name="0", size=self.size, pos=self.abspos, rgba=color)
         else:
@@ -35,7 +35,7 @@ class Box:
             axis = abs(direc)
             # joint_pos = parbox.relpos += dir halfsize
             
-            joint_pos = parbox.relpos
+            joint_pos = parbox.relpos.copy()
             if axis == 1:
                 joint_pos[0] += negative*parbox.size[0]/2
                 self.relpos = [negative*self.size[0]/2, 0, 0]
@@ -47,7 +47,8 @@ class Box:
                 joint_pos[2] += negative*parbox.size[2]/2
                 self.relpos = [0, 0, negative*self.size[2]/2]
 
-            self.abspos = add_list(joint_pos, self.relpos)
+            # self.abspos = add_list(joint_pos, self.relpos)
+            self.abspos = myabsposn
             
             jA = random.choice(["0 1 0", "1 0 0", "0 0 1"])
             pyrosim.Send_Joint(
@@ -61,7 +62,7 @@ class Box:
 
 
     def collide(self, newboxsize, newboxposn) -> bool:
-        # returns T if collides with me, else False
+        # returns T if collides with me else False
         # https://stackoverflow.com/questions/5009526/overlapping-cubes
         # Determining overlap in the x plane
         c1 = self.abspos[0]+self.size[0]/2 > newboxposn[0]-newboxsize[0]/2
@@ -73,7 +74,7 @@ class Box:
         c5 = self.abspos[2]+self.size[2]/2 > newboxposn[2]-newboxsize[2]/2
         c6 = self.abspos[2]-self.size[2]/2 < newboxposn[2]+newboxsize[2]/2
 
-        return c1 and c2 and c3 and c4 and c5 and c6
+        return c1 and c2 and c3 and c4 and c5 and c6 
 
     
 
@@ -92,8 +93,8 @@ class SnakeSolution(Solution):
         self.generation = gen
         self.popgroup = popgroup
 
-        # self.numlinks = random.randint(5,20)
-        self.numlinks = 6
+        self.numlinks = random.randint(5,10)
+        # self.numlinks = 15
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
         for i in range(0, self.numlinks):
@@ -114,7 +115,7 @@ class SnakeSolution(Solution):
         self.weights = {}
 
         # Generate the Body here, all descendents come from the same body, parents have different bodies?
-        self.Generate_Body()
+        self.Generate_Body(popgroup)
         # exit()
 
     
@@ -155,27 +156,36 @@ class SnakeSolution(Solution):
             axis = abs(direction)
             negative = -1 if direction < 0 else 1
             newbox_absposn = parent_Box.get_abspos()
+            # if axis == 1: #x
+            #     newbox_absposn[0] += parent_Box.size[0]/2 + negative*lksize[0]/2
+            # elif axis == 2: #y
+            #     newbox_absposn[1] += parent_Box.size[1]/2 + negative*lksize[1]/2
+            # else: #z
+            #     newbox_absposn[2] += parent_Box.size[2]/2 + negative*lksize[2]/2
+
             if axis == 1: #x
-                newbox_absposn[0] += parent_Box.size[0]/2 + negative*lksize[0]/2
+                newbox_absposn[0] += negative*(parent_Box.size[0]/2 + lksize[0]/2)
             elif axis == 2: #y
-                newbox_absposn[1] += parent_Box.size[1]/2 + negative*lksize[1]/2
+                newbox_absposn[1] += negative*(parent_Box.size[1]/2 + lksize[1]/2)
             else: #z
-                newbox_absposn[2] += parent_Box.size[2]/2 + negative*lksize[2]/2
+                newbox_absposn[2] += negative*(parent_Box.size[2]/2 + lksize[2]/2)
     
-            spawnable = not self.collides_with_others(lksize, newbox_absposn)
+            spawnable = not self.collides_with_others(lksize, newbox_absposn) 
         # spawnable now
-        newlink = Box(linkname, lksize, parent_Box, direction, sensors)
+        newlink = Box(linkname, lksize, parent_Box, direction, sensors, newbox_absposn)
         self.realcubes[linkname] = newlink
         return
 
     def collides_with_others(self, newboxsize, newboxposn) -> bool:
         # goes thru list of spawned boxes and checks if box hits it
+        if newboxposn[2]-newboxsize[2]/2 < 0:
+            return True
         for realbox in self.realcubes.values():
             if realbox.collide(newboxsize, newboxposn):
                 return True
         return False
 
-    def Generate_Body(self):
+    def Generate_Body(self, popgroup):
         """
         generate like madman
         """
@@ -183,7 +193,7 @@ class SnakeSolution(Solution):
         # name: (size, absposition)
         self.realcubes = {}
 
-        pyrosim.Start_URDF("body.urdf")
+        pyrosim.Start_URDF(f"body{popgroup}.urdf")
        
         
         for link, sensors in self.link2sensors.items():

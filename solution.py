@@ -13,11 +13,12 @@ class Solution():
         self.generation = gen
         self.popgroup = popgroup
 
-    def Start_Simulation(self, sim_mode="DIRECT"):
+    def Start_Simulation(self, sim_mode="DIRECT", parent=False):
         self.Generate_Brain(self.parID)   # this changes since self.weights was altered
         # spawn a new process
         # silent
-        os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)} &")
+        os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)} {self.popgroup} &")
+        print('spawned process')
         # non silent
         # os.system(f"/Users/dan/miniforge3/bin/python simulate.py {sim_mode} {str(self.parID)}")
 
@@ -52,26 +53,26 @@ class Solution():
         pyrosim.End()
 
 
-    def Generate_Body(self):
-        pyrosim.Start_URDF("body.urdf")
-        pyrosim.Send_Cube(name="Torso", pos=[1.5,0,1.5] , size=[1,1,1])
-        pyrosim.Send_Cube(name="BackLeg", pos=[-0.5,0,-0.5] , size=[1,1,1])
-        pyrosim.Send_Cube(name="FrontLeg", pos=[0.5,0,-0.5] , size=[1,1,1])
-        pyrosim.Send_Joint(name = "Torso_BackLeg" , parent= "Torso" , child = "BackLeg" , type = "revolute", position = [1,0,1])
-        pyrosim.Send_Joint(name = "Torso_FrontLeg" , parent= "Torso" , child = "FrontLeg" , type = "revolute", position = [2,0,1])
-        pyrosim.End()
+    # def Generate_Body(self):
+    #     pyrosim.Start_URDF("body.urdf")
+    #     pyrosim.Send_Cube(name="Torso", pos=[1.5,0,1.5] , size=[1,1,1])
+    #     pyrosim.Send_Cube(name="BackLeg", pos=[-0.5,0,-0.5] , size=[1,1,1])
+    #     pyrosim.Send_Cube(name="FrontLeg", pos=[0.5,0,-0.5] , size=[1,1,1])
+    #     pyrosim.Send_Joint(name = "Torso_BackLeg" , parent= "Torso" , child = "BackLeg" , type = "revolute", position = [1,0,1])
+    #     pyrosim.Send_Joint(name = "Torso_FrontLeg" , parent= "Torso" , child = "FrontLeg" , type = "revolute", position = [2,0,1])
+    #     pyrosim.End()
 
 
-    def Generate_Brain(self, parID):
-        pyrosim.Start_NeuralNetwork(f"brain{parID}.nndf")
-        pyrosim.Send_Sensor_Neuron(name = 0 , linkName = "Torso")
-        pyrosim.Send_Sensor_Neuron(name = 1 , linkName = "BackLeg")
-        pyrosim.Send_Sensor_Neuron(name = 2 , linkName = "FrontLeg")
-        pyrosim.Send_Motor_Neuron( name = 3 , jointName = "Torso_BackLeg")
-        pyrosim.Send_Motor_Neuron( name = 4 , jointName = "Torso_FrontLeg")
+    # def Generate_Brain(self, parID):
+    #     pyrosim.Start_NeuralNetwork(f"brain{parID}.nndf")
+    #     pyrosim.Send_Sensor_Neuron(name = 0 , linkName = "Torso")
+    #     pyrosim.Send_Sensor_Neuron(name = 1 , linkName = "BackLeg")
+    #     pyrosim.Send_Sensor_Neuron(name = 2 , linkName = "FrontLeg")
+    #     pyrosim.Send_Motor_Neuron( name = 3 , jointName = "Torso_BackLeg")
+    #     pyrosim.Send_Motor_Neuron( name = 4 , jointName = "Torso_FrontLeg")
 
-        # K rdmsrch 
-        for curRow in [0,1,2]:
-            for curCol in [0,1]:
-                pyrosim.Send_Synapse( sourceNeuronName = curRow , targetNeuronName = curCol+3 , weight = self.weights[curRow][curCol] )
-        pyrosim.End()
+    #     # K rdmsrch 
+    #     for curRow in [0,1,2]:
+    #         for curCol in [0,1]:
+    #             pyrosim.Send_Synapse( sourceNeuronName = curRow , targetNeuronName = curCol+3 , weight = self.weights[curRow][curCol] )
+    #     pyrosim.End()

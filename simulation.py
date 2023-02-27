@@ -8,7 +8,7 @@ import time, os
 import numpy as np
 
 class Simulation:
-    def __init__(self, sim_mode, parID) -> None:
+    def __init__(self, sim_mode, parID, popgroup) -> None:
         self.ITER_STEPS = ITER_STEPS
         # connect to engine
 
@@ -22,7 +22,7 @@ class Simulation:
         self.world = World()
 
         # before entering into robot, should first generate the robot brain{parID} file (located in solution)
-        self.robot = Robot(parID) 
+        self.robot = Robot(parID, popgroup) 
 
     def run(self):
         for t in range(ITER_STEPS):

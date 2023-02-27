@@ -7,9 +7,9 @@ import os
 from pyrosim.neuralNetwork import NEURAL_NETWORK
 
 class Robot():
-    def __init__(self, parID) -> None:
+    def __init__(self, parID, popgroup) -> None:
         # unique link identification
-        self.id = p.loadURDF("body.urdf")
+        self.id = p.loadURDF(f"body{popgroup}.urdf")
         # unique parallelization file identification
         self.parID = parID
 
@@ -47,6 +47,14 @@ class Robot():
                 # print(self.motors.keys())
                 # print(jointName)
                 self.motors[jointName.encode()].SetValue(self, desiredAngle)
+                # try:
+                #     self.motors[jointName.encode()].SetValue(self, desiredAngle)
+                #     print('found',jointName)
+                # except:
+                #     print(self.motors.keys())
+                #     print(f"can't find {jointName}")
+
+
                 # exit()
                 # self.motors[jointName].SetValue(self, desiredAngle)
 

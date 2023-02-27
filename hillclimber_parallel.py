@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 class ParallelHillclimber():
     def __init__(self) -> None:
         # clear prev files (if any)
+        os.system('rm body*.nndf')
         os.system('rm brain*.nndf')
         os.system('rm fitness*.txt')
 
@@ -26,15 +27,11 @@ class ParallelHillclimber():
 
     def Evolve(self):
         # call on parents
-        self.Evaluate(self.parents)
+        self.Evaluate(self.parents, parent=True)
 
         # mutate N generations
         for gen in range(c.NUMGENS):
-            if gen == 0:
-                # by L89, we want to 'see' 1st mutated generation
-                self.Evolve_For_One_Generation("GUI")
-            else:
-                self.Evolve_For_One_Generation("DIRECT")
+            self.Evolve_For_One_Generation("DIRECT")
 
 
 
@@ -75,7 +72,7 @@ class ParallelHillclimber():
                 self.parents[i] = self.children[i]
                 
 
-    def Evaluate(self, solns):
+    def Evaluate(self, solns, parent=False):
         # make sure solns is the whole dict
 
         # evaluating all children in parallel
@@ -83,7 +80,7 @@ class ParallelHillclimber():
         for adam in solns.values():
             # print('evaluating!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
             # adam.Start_Simulation("GUI")
-            adam.Start_Simulation("DIRECT")
+            adam.Start_Simulation("DIRECT", parent=parent)
 
         for adam in solns.values():
             # print('collecting.............................................')
