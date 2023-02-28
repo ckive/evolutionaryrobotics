@@ -4,6 +4,7 @@ import constants as c
 import copy, os
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 class ParallelHillclimber():
     def __init__(self) -> None:
@@ -19,7 +20,7 @@ class ParallelHillclimber():
         self.parents = {}
         for i in range(c.POPULATIONSIZE):
             # self.parents[i] = Solution(self.nextparID, self)
-            self.parents[i] = SnakeSolution(self.nextparID, self, 0, i)
+            self.parents[i] = SnakeSolution(self.nextparID, 0, i)
             self.nextparID += 1
 
         
@@ -31,19 +32,19 @@ class ParallelHillclimber():
         self.Evaluate(self.parents, parent=True)
 
         # mutate N generations
-        for gen in range(c.NUMGENS):
+        for gen in tqdm(range(c.NUMGENS)):
             self.Evolve_For_One_Generation("DIRECT")
 
 
 
     def Evolve_For_One_Generation(self, sim_mode):
-        print("C")
+        # print("C")
         self.Spawn()
-        print("D")
+        # print("D")
         self.Mutate()
-        print("E")
+        # print("E")
         self.Evaluate(self.children)
-        print("F")
+        # print("F")
         # exit()
         # self.Print()
         self.Select()
@@ -51,10 +52,10 @@ class ParallelHillclimber():
     def Spawn(self):
         self.children = {}
         for i, parent in self.parents.items():
-            print(parent.popgroup)
+            # print(parent.popgroup)
             self.children[i] = copy.deepcopy(parent)
-            print(self.children[i].popgroup)
-            print("F")
+            # print(self.children[i].popgroup)
+            # print("F")
             self.children[i].generation += 1
             # give children a differnt parID
             self.children[i].parID = self.nextparID
@@ -94,11 +95,11 @@ class ParallelHillclimber():
             # adam.Start_Simulation("GUI")
             adam.Start_Simulation("DIRECT", parent=parent)
 
-        print("A")
+        # print("A")
 
         for adam in solns.values():
             adam.Wait_For_Simulation_To_End()
-        print("B")
+        # print("B")
 
 
 

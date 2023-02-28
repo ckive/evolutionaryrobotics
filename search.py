@@ -2,8 +2,8 @@ import os, random
 import numpy as np
 from hillclimber_parallel import ParallelHillclimber
 
-np.random.seed(0)
-random.seed(0)
+np.random.seed(4)
+random.seed(4)
 
 # parallel HC
 phc = ParallelHillclimber()

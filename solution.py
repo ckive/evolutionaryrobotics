@@ -4,11 +4,11 @@ import random, os, time
 import pybullet as p
 
 class Solution():
-    def __init__(self, parID, ptr2phc, gen, popgroup) -> None:
+    def __init__(self, parID, gen, popgroup) -> None:
         self.weights = 2*np.random.rand(3,2)-1  #[-1,1]
         # NOTE, robot.id is robotID, solution.parID is for parallelism concept ID
         self.parID = parID
-        self.ptr2phc = ptr2phc
+        # self.ptr2phc = ptr2phc
         self.generation = gen
         self.popgroup = popgroup
 
@@ -43,9 +43,9 @@ class Solution():
     #     mutRow, mutCol = random.randint(0,2), random.randint(0,1)
     #     self.weights[mutRow][mutCol] = random.random()*2-1
 
-    def Set_ID(self):
-        # updates PHC's self.nextID for every children we spawn
-        self.ptr2phc.nextparID += 1
+    # def Set_ID(self):
+    #     # updates PHC's self.nextID for every children we spawn
+    #     self.ptr2phc.nextparID += 1
 
 
     def CreateWorld(self):

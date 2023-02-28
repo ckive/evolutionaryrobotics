@@ -80,7 +80,7 @@ class Box:
 
 
 class SnakeSolution(Solution):
-    def __init__(self, parID, ptr2phc, gen, popgroup) -> None:
+    def __init__(self, parID, gen, popgroup) -> None:
         """
         random # of boxes, size of boxes, touch sensors
             limit to boxes, 
@@ -88,7 +88,7 @@ class SnakeSolution(Solution):
             random sensesensors, and motorsensors
         """
         self.parID = parID
-        self.ptr2phc = ptr2phc
+        # self.ptr2phc = ptr2phc
         self.generation = gen
         self.popgroup = popgroup
 
