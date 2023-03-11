@@ -1,4 +1,4 @@
-# Assignment 8
+# Final Project
 
 This project is an assignment for a course at Northwestern University, [CS 396 Artificial Life](https://www.mccormick.northwestern.edu/computer-science/academics/courses/descriptions/396-2.html). The assignments are based on [Ludobots](https://www.reddit.com/r/ludobots) and use [pyrosim](https://github.com/jbongard/pyrosim).
 
@@ -40,9 +40,11 @@ Depending on the machine tested, running 1 seed of population size 10 for 500 ge
 The construction of bodies starts with a root node that is above the floor in the simulated world. A comprehensive collision detection is coded to ensure that spawned limbs do not spawn inside other limbs. However, movement of such limbs are allowed to be in close proximity of other limbs in order to study what if we allowed joints to have non-natural (but feasible) range of motion. All spawning of limbs, limb sizes, joints, and axis of movement parameters are done so randomly.
 
 ## Video
-[Here]() is the link to the video
+[Here](https://youtu.be/Xrt682Q9zOU) is the link to the video
 
 ## Teaser
+![TEASER](teaser.gif)
+
 
 
 # Method & Explanations
@@ -83,16 +85,15 @@ At the same time, with probability parameter p, one 'leaf' node of the body stru
 ### Selection
 Selection is done within across population group across generations. We employ a greedy approach where the structure and brain of the furthest moving morphology is kept as the base upon which we evolve further structures and brains. The fitness plot over time as seen in the section below shows 'jumps' of fitness increase and plateaus. This indicates that for that specific population group, some structure has had no successful mutations and hence fitness stays the same, until a mutation in another population group becomes much better and overtakes the previous base structure and the process continues.
 
+![selection](selection.png)
 
 ### Example Generation
 ![ex1](ex1.png)
 
 ## Results
 Running 10 population groups over 500 generations, seeds 0 to 9
-![Fitness over time plots](combined.png)
 
-What did you find? 
 I found that smaller, simpler structures tend to have better movement since the search complexity of a large structure for an evolutionary algorithm does not scale linearly. 
 Typically, the parameters for the joints that spawned in the creature either tend towards a high value (jerky movement) or low value (insignificant movement). This makes sense as through time some joints may have a large impact on the overall structure's movement while others may be detrimental and if that joint was not removed during the evolutionary process, it solves an optimization problem that seeks to maximize total structure movement distance which will drive joints' parameters to either max or min in the limit. There were many times that evolution got stuck as seen in the plot below. We see this also doesn't scale linearly. The longer it takes, the harder it is to evolve some structure that has a much better fitness. If we look back to our natural world's history it is arguably the same. For instance in the cambrian explosion many lifeforms were formed but overtime these stablized and the surviving species did not evolve too much over the millenium. Some robots, purely due to chance, just had harder time to grow structures that had limbs protruding out to help with movement. For instance, a structure that spawned initially like a wall would have a hard time evolving to move well. Something that can be done about this is to kill off certain simulations after some threshold of minimal evolutionary activity hasn't been met. (This also helps the environment by using less compuational resources). 
 
-![selection](selection.png)
+![Fitness over time plots](combined.png)
