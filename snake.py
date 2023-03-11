@@ -93,7 +93,7 @@ class SnakeSolution(Solution):
         self.popgroup = popgroup
 
         self.numlinks = random.randint(5,15)
-        # self.numlinks = 15
+        # self.numlinks = 5
         # mp of link(int): sensors (listof(strs))
         self.link2sensors = dd(list)
         for i in range(0, self.numlinks):

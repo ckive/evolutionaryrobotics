@@ -1,0 +1,33 @@
+<neuralNetwork>
+    <neuron name = "1_sense" type = "sensor" linkName = "1" />
+    <neuron name = "0_1_motor" type = "motor"  jointName = "0_1" />
+    <neuron name = "3_4_motor" type = "motor"  jointName = "3_4" />
+    <neuron name = "1_5_motor" type = "motor"  jointName = "1_5" />
+    <neuron name = "6_sense" type = "sensor" linkName = "6" />
+    <neuron name = "5_6_motor" type = "motor"  jointName = "5_6" />
+    <neuron name = "6_7_motor" type = "motor"  jointName = "6_7" />
+    <neuron name = "3_8_motor" type = "motor"  jointName = "3_8" />
+    <neuron name = "9_sense" type = "sensor" linkName = "9" />
+    <neuron name = "4_10_motor" type = "motor"  jointName = "4_10" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "0_1_motor" weight = "0.4110510888345882" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "3_4_motor" weight = "-0.9542387879229914" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "1_5_motor" weight = "0.04955502035731785" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "5_6_motor" weight = "0.5580711777036091" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "6_7_motor" weight = "0.3467650866140026" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "3_8_motor" weight = "0.41053190486792057" />
+    <synapse sourceNeuronName = "1_sense" targetNeuronName = "4_10_motor" weight = "-0.5747580306448383" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "0_1_motor" weight = "-0.3716885292471206" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "3_4_motor" weight = "0.7965517679362375" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "1_5_motor" weight = "-0.24081585855681165" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "5_6_motor" weight = "0.834476045587389" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "6_7_motor" weight = "-0.6553602422766129" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "3_8_motor" weight = "0.6774637431871258" />
+    <synapse sourceNeuronName = "6_sense" targetNeuronName = "4_10_motor" weight = "0.023829240412893027" />
+    <synapse sourceNeuronName = "9_sense" targetNeuronName = "0_1_motor" weight = "-0.35945114508607623" />
+    <synapse sourceNeuronName = "9_sense" targetNeuronName = "3_4_motor" weight = "0.9951494937336942" />
+    <synapse sourceNeuronName = "9_sense" targetNeuronName = "1_5_motor" weight = "0.9014836485679343" />
+    <synapse sourceNeuronName = "9_sense" targetNeuronName = "5_6_motor" weight = "-0.02858775548844683" />
+    <synapse sourceNeuronName = "9_sense" targetNeuronName = "6_7_motor" weight = "-0.21896912027824111" />
+    <synapse sourceNeuronName = "9_sense" targetNeuronName = "3_8_motor" weight = "-0.6815930147961438" />
+    <synapse sourceNeuronName = "9_sense" targetNeuronName = "4_10_motor" weight = "-0.4209929180576555" />
+</neuralNetwork>

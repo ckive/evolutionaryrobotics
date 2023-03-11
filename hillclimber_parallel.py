@@ -124,16 +124,21 @@ class ParallelHillclimber():
         print('')
 
 
-    def plot(self):
+    def plot(self, seed):
         # *-1 bc we're looking for furthest -x
         self.bfh = np.array(self.bfh[1:])*-1
-        # np.savetxt("ftinesshistory.csv", self.bfh, delimiter=",")
+        # np.savetxt(f"fitnesshistory{seed}.csv", self.bfh, delimiter=",")
+        with open(f'fitnesshistory{seed}.npy', 'wb') as f:
+            np.save(f, self.bfh)
+
+        # with open('fitnesshistory.npy', 'ab') as f:
+        #     np.save(f, self.bfh)
         # print(self.bfh)
 
-        plt.title(f"Fitness Curve best creature in population in each of {c.NUMGENS} generations")
-        plt.xlabel("Generations")
-        plt.ylabel("Fitness")
-        plt.plot(range(1,c.NUMGENS+1), self.bfh)
+        # plt.title(f"Fitness Curve best creature in population in each of {c.NUMGENS} generations")
+        # plt.xlabel("Generations")
+        # plt.ylabel("Fitness")
+        # plt.plot(range(1,c.NUMGENS+1), self.bfh)
 
-        plt.savefig('fitnesscurve.png')
+        # plt.savefig('fitnesscurve.png')
         
